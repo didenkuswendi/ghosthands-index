@@ -2,8 +2,15 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ghost Hands - Demo & Test Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Ghost Hands – Tingkatkan Produktivitas dengan Otomatisasi Browser Cerdas | Ekstensi Chrome Terbaik</title>
+  <meta name="description" content="Ghost Hands: ekstensi Chrome otomatisasi klik, ketik, scroll, dropdown, loop, variabel. Gratis dengan kuota harian, premium unlimited. Hemat waktu, kurangi error manual. Download sekarang.">
+  <meta name="keywords" content="otomatisasi browser, auto click chrome, auto type chrome, web automation extension, loop automation, ghost hands, trakteer, automation tool, produktivitas kerja, data entry otomatis">
+  <meta name="author" content="Diden Kuswendi">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://didenkuswendi.github.io/ghosthands-index/">
+  <!-- Favicon (SVG) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e94560'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm0 13c-2.33 0-4.31-1.46-5.11-3.5h10.22c-.8 2.04-2.78 3.5-5.11 3.5z'/%3E%3C/svg%3E">
   <style>
     * {
       margin: 0;
@@ -15,19 +22,45 @@
       font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: #e2e8f0;
-      line-height: 1.5;
-      padding: 2rem;
+      line-height: 1.6;
+      padding: 0 1rem 2rem;
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1280px;
       margin: 0 auto;
     }
 
-    /* Notification */
+    /* Sticky Header */
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #0f172aee;
+      backdrop-filter: blur(12px);
+      border-radius: 0 0 24px 24px;
+      margin-bottom: 2rem;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #334155;
+    }
+    .sticky-header h1 {
+      font-size: 2.2rem;
+      background: linear-gradient(135deg, #e94560, #f97316);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: inline-block;
+    }
+    .sticky-header p {
+      font-size: 1rem;
+      color: #cbd5e1;
+      margin-top: 6px;
+    }
+
+    /* Notifikasi */
     .notify-area {
       position: fixed;
-      top: 20px;
+      top: 80px;
       right: 20px;
       z-index: 1000;
       display: flex;
@@ -59,33 +92,53 @@
       backdrop-filter: blur(8px);
       border-radius: 24px;
       padding: 1.5rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
       border: 1px solid #334155;
-      transition: transform 0.2s;
+      transition: transform 0.2s, border-color 0.2s;
     }
     .card:hover {
-      transform: translateY(-2px);
       border-color: #e94560;
     }
-    h1, h2, h3 {
+    .demo-card {
+      background: #0f1a2fdd;
+    }
+    details {
+      margin-bottom: 1rem;
+      border: 1px solid #2c3e66;
+      border-radius: 16px;
+      padding: 0.5rem 1rem;
+      background: #0f1a2f;
+    }
+    summary {
       font-weight: 600;
-      letter-spacing: -0.01em;
+      cursor: pointer;
+      padding: 0.5rem 0;
+      color: #e94560;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    h1 {
-      font-size: 2.5rem;
-      background: linear-gradient(135deg, #e94560, #f97316);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      display: inline-block;
+    summary::-webkit-details-marker {
+      display: none;
     }
-    .badge {
-      background: #e94560;
-      padding: 4px 12px;
-      border-radius: 40px;
-      font-size: 0.7rem;
-      font-weight: bold;
-      color: white;
+    summary::before {
+      content: "▶";
+      font-size: 0.8rem;
+      transition: transform 0.2s;
+    }
+    details[open] summary::before {
+      transform: rotate(90deg);
+    }
+    h2 {
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #e94560;
+      padding-left: 0.75rem;
+    }
+    h3 {
+      font-size: 1.3rem;
+      margin: 1rem 0 0.5rem;
     }
     .grid-2 {
       display: grid;
@@ -123,14 +176,6 @@
       color: white;
       margin-top: 6px;
     }
-    label {
-      font-weight: 500;
-      font-size: 0.85rem;
-      color: #b0c4de;
-    }
-    .form-group {
-      margin-bottom: 1rem;
-    }
     .scroll-area {
       height: 200px;
       overflow-y: auto;
@@ -139,16 +184,29 @@
       padding: 12px;
       margin-top: 10px;
     }
-    .scroll-content p {
-      margin: 8px 0;
+    pre {
+      background: #0f1a2f;
+      padding: 1rem;
+      border-radius: 16px;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      border: 1px solid #2c3e66;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #0f1a2f;
+      border-radius: 12px;
+    }
+    th, td {
       padding: 8px;
-      background: #1e2a47;
-      border-radius: 8px;
+      text-align: left;
+      border-bottom: 1px solid #2c3e66;
     }
     footer {
       text-align: center;
-      margin-top: 3rem;
-      padding-top: 1.5rem;
+      margin-top: 2rem;
+      padding-top: 1rem;
       border-top: 1px solid #2c3e66;
       font-size: 0.8rem;
     }
@@ -159,26 +217,18 @@
     a:hover {
       text-decoration: underline;
     }
-    pre {
-      background: #0f1a2f;
-      padding: 1rem;
-      border-radius: 16px;
-      overflow-x: auto;
-      font-size: 0.8rem;
-      border: 1px solid #2c3e66;
+    @media (max-width: 640px) {
+      body { padding: 0 0.75rem 1rem; }
+      .sticky-header h1 { font-size: 1.6rem; }
+      .card { padding: 1rem; }
     }
-    .copy-btn {
-      background: #2c3e66;
-      border: none;
-      padding: 4px 12px;
-      border-radius: 20px;
+    .badge-premium {
+      background: #e94560;
+      padding: 2px 8px;
+      border-radius: 40px;
       font-size: 0.7rem;
-      cursor: pointer;
-      margin-top: 8px;
-    }
-    hr {
-      border-color: #2c3e66;
-      margin: 1rem 0;
+      font-weight: bold;
+      margin-left: 8px;
     }
   </style>
 </head>
@@ -187,29 +237,20 @@
 <div class="notify-area" id="notifyArea"></div>
 
 <div class="container">
-  <!-- Header -->
-  <div class="card" style="text-align: center;">
+  <!-- Sticky Header -->
+  <div class="sticky-header">
     <h1>👻 Ghost Hands</h1>
-    <p style="margin-top: 0.5rem;">Platform uji coba otomatisasi - klik, ketik, scroll, dropdown, dan lainnya</p>
-    <div class="badge">Test Page v1.0</div>
+    <p>Otomatisasi browser pintar – bebas dari klik manual yang membosankan</p>
   </div>
 
-  <!-- Tentang Aplikasi -->
-  <div class="card">
-    <h2>📖 Latar Belakang & Tujuan</h2>
-    <p style="margin-top: 0.5rem;">Pekerjaan kantor modern seringkali membutuhkan <strong>ratusan klik, input data berulang, scroll halaman, dan navigasi antar tab</strong> setiap harinya. Mulai dari mengisi spreadsheet, mengelola database, approval sistem, hingga memproses laporan – semua itu memakan waktu dan rawan kesalahan manusia.</p>
-    <p style="margin-top: 1rem;"><strong>Ghost Hands</strong> lahir untuk mengotomatisasi tugas-tugas membosankan tersebut. Dengan antarmuka yang intuitif, Anda dapat merekam/menyusun skenario step-by-step (klik, ketik, pilih dropdown, scrolling, loop, variabel) dan menjalankannya secara otomatis.</p>
-    <p style="margin-top: 0.5rem;">Halaman ini menyediakan berbagai elemen yang bisa langsung diuji coba dengan ekstensi. Gunakan tab <strong>Dirty Hands</strong> untuk membuat skenario otomatis.</p>
-  </div>
-
-  <!-- Kumpulan Elemen untuk Pengujian -->
-  <div class="card">
-    <h2>🎯 Elemen Uji Coba (beri label jelas)</h2>
+  <!-- ==================== DEMO SECTION (Selalu terbuka) ==================== -->
+  <div class="card demo-card">
+    <h2>🎯 Coba Langsung Otomatisasi di Halaman Ini</h2>
+    <p>Gunakan ekstensi Ghost Hands (tab Dirty Hands) untuk mengotomatisasi elemen di bawah. Contoh: klik, ketik, pilih dropdown, scroll, loop.</p>
     <div class="grid-2">
-      <!-- Kolom kiri -->
       <div>
         <div class="form-group">
-          <label>📝 Input Teks (untuk testing type action)</label>
+          <label>📝 Input Teks (uji aksi type)</label>
           <input type="text" id="demoInput" placeholder="Ketik sesuatu...">
         </div>
         <div class="form-group">
@@ -217,7 +258,7 @@
           <textarea id="demoTextarea" rows="2" placeholder="Area teks"></textarea>
         </div>
         <div class="form-group">
-          <label>🔽 Pilih Dropdown</label>
+          <label>🔽 Dropdown (selectDropdown)</label>
           <select id="demoSelect">
             <option value="opt1">Pilihan 1 (Opt1)</option>
             <option value="opt2">Pilihan 2 (Opt2)</option>
@@ -225,18 +266,13 @@
           </select>
         </div>
         <div>
-          <button id="btnClickMe" class="primary">🖱️ Klik Saya (button biasa)</button>
+          <button id="btnClickMe" class="primary">🖱️ Klik Saya</button>
           <button id="btnSuccess" style="margin-left: 8px; background:#2ecc71;">✅ Notifikasi Sukses</button>
         </div>
-        <div style="margin-top: 12px;">
-          <button id="btnAlert" class="btn">⚠️ Munculkan Alert (jangan gunakan otomatis, hanya manual)</button>
-        </div>
       </div>
-
-      <!-- Kolom kanan -->
       <div>
         <div class="form-group">
-          <label>🏷️ Tombol dengan teks berbeda (untuk click_by_text)</label>
+          <label>🏷️ Tombol dengan teks (click_by_text)</label>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <button class="action-btn" data-action="save">💾 Simpan</button>
             <button class="action-btn" data-action="edit">✏️ Edit</button>
@@ -245,107 +281,244 @@
           </div>
         </div>
         <div class="form-group">
-          <label>🔗 Link test (tidak akan meninggalkan halaman)</label>
-          <a href="#" id="testLink" style="display: block; padding: 8px 0;">Klik link ini (akan menampilkan notifikasi)</a>
+          <label>🔗 Link test (hover/klik)</label>
+          <a href="#" id="testLink" style="display: block; padding: 8px 0;">Klik link ini (feedback notifikasi)</a>
         </div>
         <div class="form-group">
-          <label>📜 Area Scroll (untuk testing scroll)</label>
+          <label>📜 Area Scroll (scroll element)</label>
           <div id="scrollArea" class="scroll-area">
             <div class="scroll-content">
-              <p>📌 Baris 1 - Lorem ipsum dolor sit amet.</p>
-              <p>📌 Baris 2 - Consectetur adipiscing elit.</p>
-              <p>📌 Baris 3 - Sed do eiusmod tempor incididunt.</p>
-              <p>📌 Baris 4 - Ut labore et dolore magna aliqua.</p>
-              <p>📌 Baris 5 - Ut enim ad minim veniam.</p>
-              <p>📌 Baris 6 - Quis nostrud exercitation ullamco.</p>
-              <p>📌 Baris 7 - Duis aute irure dolor in reprehenderit.</p>
-              <p>📌 Baris 8 - Excepteur sint occaecat cupidatat non proident.</p>
+              <p>📌 Baris 1 - Lorem ipsum.</p><p>📌 Baris 2 - Consectetur.</p><p>📌 Baris 3 - Sed do.</p>
+              <p>📌 Baris 4 - Ut labore.</p><p>📌 Baris 5 - Enim ad minim.</p><p>📌 Baris 6 - Quis nostrud.</p>
+              <p>📌 Baris 7 - Duis aute.</p><p>📌 Baris 8 - Excepteur sint.</p>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- Dataset & Loop Demo -->
-  <div class="card">
-    <h2>🔄 Contoh Dataset (loop dengan auto)</h2>
-    <p>Gunakan dataset di ekstensi <strong>Dirty Hands</strong> untuk melakukan perulangan pada tombol di bawah. Isi dataset dengan angka 1,2,3,4 kemudian buat loop dengan <code>start loop (auto)</code> dan aksi klik tombol <code>#btnLoop-{{line}}</code> untuk menguji.</p>
-    <div style="display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap;">
-      <button id="btnLoop-1" class="loop-btn">Tombol 1</button>
-      <button id="btnLoop-2" class="loop-btn">Tombol 2</button>
-      <button id="btnLoop-3" class="loop-btn">Tombol 3</button>
-      <button id="btnLoop-4" class="loop-btn">Tombol 4</button>
+    <div style="margin-top: 1.5rem;">
+      <h3>🔄 Contoh Loop & Dataset (uji {{line}})</h3>
+      <p>Gunakan dataset di ekstensi dengan angka 1,2,3,4 dan start loop (auto) + <code>#btnLoop-{{line}}</code>.</p>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0;">
+        <button id="btnLoop-1" class="loop-btn">Tombol 1</button>
+        <button id="btnLoop-2" class="loop-btn">Tombol 2</button>
+        <button id="btnLoop-3" class="loop-btn">Tombol 3</button>
+        <button id="btnLoop-4" class="loop-btn">Tombol 4</button>
+      </div>
+      <div id="loopResult" style="background:#0f1a2f; border-radius: 12px; padding: 8px;">Belum ada klik</div>
     </div>
-    <div id="loopResult" style="margin-top: 12px; background:#0f1a2f; border-radius: 12px; padding: 8px; font-size:0.8rem;">Belum ada klik</div>
   </div>
 
-  <!-- Informasi Kontak Developer -->
+  <!-- ==================== LATAR BELAKANG & NARASI ==================== -->
   <div class="card">
-    <h2>📫 Kontak Developer</h2>
-    <p>Jika ada pertanyaan, saran, atau ingin kerja sama, hubungi:</p>
-    <ul style="margin-top: 10px; list-style: none; padding-left: 0;">
+    <h2>📖 Cerita di Balik Ghost Hands</h2>
+    <p>Saya adalah seorang praktisi di industri yang setiap hari harus mengisi puluhan data, klik tombol yang sama berulang kali, scroll halaman, dan pindah tab. Rasa capek dan bosan karena pekerjaan yang monoton mendorong saya untuk mencari solusi otomatisasi. Awalnya saya menggunakan berbagai macam native bahasa pemrograman, tapi rekan seperjuangan tidak bisa menggunakannya. Lalu saya coba ekstensi Chrome yang ada, namun tidak fleksibel dan mahal.</p>
+    <br>
+    <p>Dari situlah saya memutuskan membuat <strong>Ghost Hands</strong> – sebuah ekstensi otomatisasi yang <strong>mudah digunakan, gratis dengan kuota harian, dan premium terjangkau</strong>. Saya ingin membantu rekan-rekan pekerja kantor, admin, HR, data entry, developer, dan siapa saja yang lelah dengan klik manual berulang. Dengan Ghost Hands, Anda bisa:</p>
+    <br>
+    <ul>
+      <li>✅ Mengklik elemen berdasarkan teks atau selector CSS</li>
+      <li>✅ Mengetik teks otomatis (bisa pakai dataset {{line}})</li>
+      <li>✅ Scroll halaman atau elemen tertentu (termasuk arah kiri/kanan)</li>
+      <li>✅ Memilih dropdown, hover, upload file, dan banyak lagi</li>
+      <li>✅ Menggunakan variabel dan loop untuk tugas kompleks</li>
+    </ul>
+    <br>
+    <p>Sebagai programmer, saya banyak membuat system otomasi lintas sistem operasi dengan multi cara, bahkan ekstensi sederhana untuk kebutuhan saya sendiri. Namun teman‑teman non‑coding sering mengeluh: <em>"Ini rumit, saya tidak bisa memakainya!"</em> Karena itu, saya membangun <strong>Ghost Hands</strong>: <strong>alat otomatisasi visual tanpa kode</strong> yang dapat dipakai oleh siapa saja – akuntan, admin, HR, marketing, atau siapa pun yang lelah mengulang pekerjaan yang sama setiap hari.</p>
+    <br>
+    <p>Ghost Hands lahir dari kebutuhan nyata di lapangan. Karena saya langsung bergerak di industri, ekstensi ini akan <strong>selalu diperbarui sesuai kasus aktual dan masukan pengguna</strong>. Saya ingin pekerjaan Anda lebih ringan, produktivitas melonjak, dan Anda bisa fokus pada hal yang lebih penting.</p>
+    <br>
+    <p><strong>Ghost Hands gratis selamanya untuk kebutuhan dasar</strong> (10 eksekusi step/hari). Jika Anda butuh unlimited dan fitur premium, Anda bisa meningkatkan melalui <strong>tab Lisensi</strong> di dalam ekstensi. Tidak perlu donasi eksternal – semuanya terintegrasi.</p>
+  </div>
+
+  <!-- ==================== KEUNTUNGAN PREMIUM ==================== -->
+  <div class="card">
+    <h2>💎 Mengapa Memilih Ghost Hands Premium? <span class="badge-premium">Unlimited</span></h2>
+    <div class="grid-2">
+      <div>
+        <h3>🎁 Mode Gratis</h3>
+        <ul>
+          <li>✅ Semua fitur otomatisasi lengkap</li>
+          <li>✅ 10 eksekusi step per hari (cukup untuk uji coba & tugas ringan)</li>
+          <li>✅ Simpan & load skenario JSON</li>
+          <li>✅ Rekam aktivitas</li>
+        </ul>
+      </div>
+      <div>
+        <h3>🚀 Premium (Trakteer minimal Rp5.000)</h3>
+        <ul>
+          <li>✅ Unlimited eksekusi step (tanpa batasan harian)</li>
+          <li>✅ Prioritas support via email/chat</li>
+          <li>✅ Update fitur terbaru lebih cepat</li>
+          <li>✅ Bantu perkembangan ekstensi ini</li>
+        </ul>
+        <p>Trakteer Rp5.000 = 7 hari akses premium. Trakteer lebih besar = masa aktif lebih panjang. <strong>Aktivasi mudah:</strong> salin Device ID di tab Lisensi, pembayaran via Trakteer (Multi VA & QRIS-Ewallet  ) dengan mencantumkan Device ID sebagai Nama Pendukung, lalu klik Verifikasi.</p>        
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PANDUAN LENGKAP (dengan expand) ==================== -->
+  <details>
+    <summary><strong>📘 Panduan Lengkap: Cara Install, Izin, Do & Don'ts</strong></summary>
+    <div style="padding-top: 1rem;">
+      <div class="card">
+        <h2>🔧 Cara Install Ekstensi</h2>
+        <ol>
+          <li>Download file zip dari link di bawah (setelah setujui syarat).</li>
+          <li>Ekstrak ke folder permanen.</li>
+          <li>Buka <code>chrome://extensions</code> di Chrome/Edge/Brave.</li>
+          <li>Aktifkan <strong>Developer mode</strong> (toggle kanan atas).</li>
+          <li>Klik <strong>Load unpacked</strong>, pilih folder hasil ekstraksi.</li>
+          <li>Ikon Ghost Hands muncul di toolbar. Klik untuk membuka side panel.</li>
+        </ol>
+        <p>⚠️ Catatan: Ekstensi tidak dipublikasikan di Chrome Web Store, jadi akan ada peringatan "Developer mode extensions" setiap kali Chrome dibuka – ini normal.</p>
+      </div>
+      <div class="card">
+        <h2>🌐 Browser yang Didukung</h2>
+        <ul><li>✅ Google Chrome (versi 88+) – paling stabil</li><li>✅ Microsoft Edge (Chromium)</li><li>✅ Brave, Opera, Vivaldi</li><li>❌ Firefox (tidak support side panel API)</li><li>❌ Safari</li></ul>
+      </div>
+      <div class="card">
+        <h2>🔐 Izin yang Dibutuhkan & Alasan Keamanan</h2>
+        <table><th>Izin</th><th>Fungsi</th></tr>
+        <tr><td><code>activeTab</code></td><td>Akses tab aktif untuk jalankan script</td></tr>
+        <tr><td><code>scripting</code></td><td>Menyuntikkan kode ke halaman web</td></tr>
+        <tr><td><code>storage</code></td><td>Menyimpan lisensi, device ID, skenario</td></tr>
+        <tr><td><code>sidePanel</code></td><td>Menampilkan panel samping</td></tr>
+        <tr><td><code>tabs</code></td><td>Membuka/menutup tab</td></tr>
+        <tr><td><code>&lt;all_urls&gt;</code></td><td>Agar bisa bekerja di semua situs</td></tr>
+        </table>
+        <p>🔒 Privasi: Ghost Hands tidak mengirim data Anda ke server kecuali verifikasi lisensi ke API Trakteer. Semua skenario disimpan lokal di browser Anda.</p>
+      </div>
+      <div class="card">
+        <h2>✅ Do & Don'ts</h2>
+        <ul><li>✅ Gunakan untuk otomatisasi kerja, testing, data entry, scraping non‑ilegal.</li><li>✅ Backup skenario (simpan JSON) secara rutin.</li><li>❌ Jangan gunakan untuk spam, aktivitas melanggar hukum, atau input data sensitif di situs tidak terpercaya.</li><li>❌ Jangan bagikan license key Anda.</li></ul>
+      </div>
+    </div>
+  </details>
+
+  <details>
+    <summary><strong>🎯 Contoh Selector & Format Aksi (Lengkap)</strong></summary>
+    <div class="card">
+      <h3>CSS Selector untuk Klik, Ketik, Tunggu, dll</h3>
+      <pre>#id                → #submitBtn
+.class              → .btn-primary
+atribut             → input[name="email"]
+tag.class           → div.content
+nth-child           → li:nth-child(3) a
+nth-of-type         → div:nth-of-type(2)</pre>
+      <h3>Scroll (halaman / elemen)</h3>
+      <pre>Scroll halaman:       300 (turun), -200 (naik)
+Scroll elemen + arah: #scrollArea|down|200
+Scroll ke elemen:     #target|intoView</pre>
+      <h3>Pilih Dropdown</h3>
+      <pre>Berdasarkan teks:   #selectId|Pilihan 2
+Berdasarkan value:  #selectId|value:opt2</pre>
+      <h3>Ketik teks & gunakan {{line}}</h3>
+      <pre>Teks biasa:         #inputId|Halo dunia
+Dengan {{line}}:    #inputId|{{line}} (wajib dalam loop auto + dataset angka)</pre>
+      <h3>Klik berdasarkan teks (click_by_text)</h3>
+      <pre>exact: "Simpan"
+wildcard: "*simpan*"   (mengandung)
+awalan: "Simpan*"
+akhiran: "*Simpan"
+indeks: "Simpan | 2" atau "Simpan | last"</pre>
+      <h3>Klik semua elemen (click_each)</h3>
+      <pre>Parameter: .btn-delete, nilai tambahan (delay antar klik, default 500ms)</pre>
+      <h3>Loop</h3>
+      <pre>Start Loop:         5 (angka tetap) atau "auto" (sesuai dataset)
+Di dalam loop:      gunakan {{line}} untuk mengambil baris dataset</pre>
+      <h3>Hover / Mouse Over</h3>
+      <pre>Parameter: CSS selector (.dropdown-menu)</pre>
+      <h3>Upload File</h3>
+      <pre>Parameter: selector input file; nilai tambahan (kosong, buka dialog)</pre>
+      <h3>Navigasi & Tab</h3>
+      <pre>navigate: URL
+click_open_new_tab: selector link
+close_tab: (tanpa parameter)</pre>
+      <h3>Fitur Lainnya</h3>
+      <pre>getVariable: #elementId|text / value / html / href (simpan ke variabel)
+delay:         500 (ms)
+waitForElement: .modal-content (timeout 30s)
+waitForPageLoad: (tanpa parameter)</pre>
+    </div>
+  </details>
+
+  <details>
+    <summary><strong>🧩 Tips & Trik (Maksimalkan Ghost Hands)</strong></summary>
+    <div class="card">
+      <ul>
+        <li>🔍 Gunakan tombol <strong>Suggest</strong> di ekstensi – akan otomatis menampilkan elemen yang bisa diinteraksi (termasuk shadow DOM).</li>
+        <li>🔄 Loop dengan Dataset: isi dataset textarea dengan baris data (misal 1,2,3), lalu start loop (auto) dan gunakan <code>{{line}}</code> di parameter klik, ketik, atau selector.</li>
+        <li>📦 Variabel Dinamis: ambil teks/value dari halaman dengan <code>getVariable</code>, lalu pakai placeholder <code>{{namaVariabel}}</code> di step berikutnya (case‑sensitive).</li>
+        <li>⏱️ Jangan lupa sisipkan <code>delay</code> jika halaman perlu waktu merespon (rekomendasi 500-1000ms).</li>
+        <li>💾 Simpan skenario ke file JSON setelah selesai menyusun step – bisa di‑load kapan saja.</li>
+        <li>📋 Dataset bisa di‑load dari file .txt (tombol "Load dari file .txt").</li>
+        <li>🖱️ Rekam Aktifitas: nyalakan rekaman, lakukan klik/ketik/dropdown secara manual, ekstensi akan mengkonversinya menjadi step.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary><strong>🛠️ Daftar Fitur Lengkap (Dirty Hands)</strong></summary>
+    <div class="card">
+      <div style="columns:2; column-gap: 1rem;">
+        <ul><li>🌐 Navigasi URL</li><li>🖱️ Klik elemen (CSS)</li><li>🖱️ Klik berdasarkan teks (case‑sensitive, wildcard)</li><li>🖱️ Klik semua elemen (click_each)</li><li>⌨️ Ketik teks (support {{line}})</li><li>📋 Pilih dropdown (by text/value)</li><li>📜 Scroll halaman / elemen + arah (down/up/left/right)</li><li>🖱️ Hover / mouse over</li><li>📤 Upload file (buka dialog)</li><li>🔍 Ambil teks/atribut ke variabel</li><li>⏱️ Delay (ms)</li><li>⏳ Tunggu element muncul (timeout 30 detik)</li><li>⏳ Tunggu halaman load</li><li>🔁 Start Loop & End Loop (angka tetap atau auto dari dataset)</li><li>🔗 Klik & buka tab baru</li><li>❌ Tutup tab saat ini</li></ul>
+      </div>
+    </div>
+  </details>
+
+  <!-- ==================== DOWNLOAD CARD dengan persetujuan ==================== -->
+  <div class="card" id="downloadCard">
+    <h2>📥 Download Ghost Hands</h2>
+    <p>Sebelum mendownload, baca dan setujui ketentuan berikut:</p>
+    <div style="background: #0f1a2f; padding: 15px; border-radius: 16px; margin: 12px 0;">
+      <h4>📜 Syarat & Ketentuan Penggunaan</h4>
+      <ul>
+        <li><strong>Lisensi:</strong> Gratis dengan batasan 10 eksekusi step/hari. Premium unlimited via Trakteer.</li>
+        <li>Dilarang menggunakan untuk aktivitas ilegal atau melanggar hukum.</li>
+        <li>Ekstensi tidak mengumpulkan data pribadi. Komunikasi eksternal hanya untuk verifikasi Trakteer ke API Trakteer.</li>
+        <li>Penulis tidak bertanggung jawab atas kerusakan atau kehilangan data akibat penggunaan ekstensi.</li>
+        <li>Pembaruan dilakukan secara manual (download ulang dari link ini).</li>
+        <li>Dilarang mendistribusikan ulang file ekstensi tanpa izin tertulis.</li>
+      </ul>
+      <p><strong>Dengan mengunduh, Anda menyatakan setuju dengan seluruh syarat di atas.</strong></p>
+    </div>
+    <label style="display: flex; align-items: center; gap: 10px; margin: 15px 0;">
+      <input type="checkbox" id="agreeCheckbox"> <strong>Saya setuju dengan syarat & ketentuan</strong>
+    </label>
+    <div id="downloadLinkContainer" style="display: none;">
+      <a id="downloadLink" href="#" class="primary" style="display: inline-block; padding: 12px 24px; background: #e94560; border-radius: 40px;">⬇️ Download Ghost Hands (ZIP)</a>
+      <p class="small" style="margin-top: 8px;">File akan diarahkan ke Google Drive. Pastikan Anda login jika diperlukan.</p>
+    </div>
+    <div id="noAgreeMessage" style="display: none; color: #e74c3c;">Anda harus menyetujui syarat & ketentuan untuk menampilkan link download.</div>
+  </div>
+
+  <!-- ==================== KONTAK & DUKUNGAN ==================== -->
+  <div class="card">
+    <h2>📞 Dukungan & Kontak Developer</h2>
+    <p>Jika ada pertanyaan, laporan bug, atau saran fitur, hubungi saya:</p>
+    <ul style="margin-top: 8px;">
       <li>👤 <strong>Diden Kuswendi</strong></li>
       <li>📷 Instagram: <a href="https://instagram.com/didenkuswendi" target="_blank">@didenkuswendi</a></li>
       <li>🌐 Blog: <a href="https://www.didenkuswendi.com" target="_blank">www.didenkuswendi.com</a></li>
       <li>✉️ Email: <a href="mailto:didenkuswendi@gmail.com">didenkuswendi@gmail.com</a></li>
     </ul>
-    <p style="margin-top: 8px;">Jangan ragu untuk mencoba ekstensi dan beri masukan 🙌</p>
-  </div>
-
-  <!-- Skenario JSON Contoh -->
-  <div class="card">
-    <h2>📄 Contoh Skenario JSON (load ke Dirty Hands)</h2>
-    <p>Salin kode JSON di bawah, simpan sebagai file <code>demo-ghost-hands.json</code>, lalu gunakan tombol <strong>Load Skenario (JSON)</strong> di tab Dirty Hands.</p>
-    <pre id="jsonExample">{
-  "name": "Demo Skenario - Eksplorasi Penuh",
-  "steps": [
-    { "action": "navigate", "param": "https://didenkuswendi.github.io/ghost-hands-test/", "extra": "" },
-    { "action": "waitForPageLoad", "param": "", "extra": "" },
-    { "action": "click", "param": "#btnClickMe", "extra": "" },
-    { "action": "delay", "param": 800, "extra": "" },
-    { "action": "type", "param": "#demoInput", "extra": "Halo, ini otomatis!" },
-    { "action": "delay", "param": 500, "extra": "" },
-    { "action": "selectDropdown", "param": "#demoSelect|Pilihan 2 (Opt2)", "extra": "" },
-    { "action": "delay", "param": 500, "extra": "" },
-    { "action": "click_by_text", "param": "Edit", "extra": "" },
-    { "action": "delay", "param": 500, "extra": "" },
-    { "action": "scroll", "param": 300, "extra": "" },
-    { "action": "delay", "param": 600, "extra": "" },
-    { "action": "click", "param": "#btnLoop-2", "extra": "" },
-    { "action": "delay", "param": 400, "extra": "" },
-    { "action": "hover", "param": "#btnSuccess", "extra": "" },
-    { "action": "delay", "param": 500, "extra": "" },
-    { "action": "click", "param": "#btnSuccess", "extra": "" },
-    { "action": "waitForElement", "param": "#scrollArea p:first-child", "extra": "" },
-    { "action": "getVariable", "param": "#demoInput|value", "extra": "inputValue" },
-    { "action": "click_by_text", "param": "Simpan", "extra": "" },
-    { "action": "delay", "param": 1000, "extra": "" },
-    { "action": "loop_start", "param": 3, "extra": "" },
-    { "action": "click", "param": "#btnLoop-{{line}}", "extra": "" },
-    { "action": "delay", "param": 400, "extra": "" },
-    { "action": "loop_end", "param": "", "extra": "" },
-    { "action": "navigate", "param": "https://trakteer.id/didenkuswendi", "extra": "" },
-    { "action": "delay", "param": 2000, "extra": "" },
-    { "action": "close_tab", "param": "", "extra": "" }
-  ]
-}</pre>
-    <button id="copyJsonBtn" class="copy-btn">📋 Salin JSON</button>
-    <p style="margin-top: 12px; font-size:0.75rem;">💡 <strong>Catatan:</strong> Skenario di atas mencakup hampir semua jenis aksi: navigasi, klik, type, dropdown, click_by_text, scroll, hover, getVariable, loop, close_tab. Pastikan untuk mengubah URL navigate sesuai dengan server lokal Anda jika file tidak di-host.</p>
+    <p>🤝 <strong>Dukung saya dalam pengembangan Ghost Hands via Trakteer.</strong></p>
+    <a href="https://trakteer.id/didenkuswendi" target="_blank" class="primary" style="display: inline-block;">💖 Trakteer Sekarang</a>
   </div>
 
   <footer>
-    <p>Ghost Hands © 2025 - Otomasi pintar untuk pekerjaan efisien.</p>
+    <p>Ghost Hands © 2025 – Otomatisasi cerdas untuk produktivitas maksimal.</p>
   </footer>
 </div>
 
 <script>
-  // ========== Fungsi notifikasi di halaman (feedback untuk eksekusi otomatis) ==========
-  function showNotification(message, type = 'info') {
+  // Fungsi notifikasi (sama seperti sebelumnya)
+  function showNotification(msg, type = 'info') {
     const area = document.getElementById('notifyArea');
     const notif = document.createElement('div');
     notif.className = `notify ${type}`;
-    notif.innerHTML = message;
+    notif.innerHTML = msg;
     area.appendChild(notif);
     setTimeout(() => {
       notif.style.opacity = '0';
@@ -354,71 +527,48 @@
     }, 3000);
   }
 
-  // Event listener manual untuk feedback (agar pengguna juga bisa lihat efek saat automasi berjalan)
+  // Event listener demo
   document.getElementById('btnClickMe')?.addEventListener('click', () => showNotification('✅ Tombol "Klik Saya" ditekan', 'success'));
-  document.getElementById('btnSuccess')?.addEventListener('click', () => showNotification('🎉 Notifikasi sukses dari tombol hijau!', 'success'));
-  document.getElementById('btnAlert')?.addEventListener('click', () => alert('Ini alert manual. Gunakan untuk test tapi tidak direkomendasikan otomatis.'));
-  
-  // Tombol aksi (Simpan, Edit, Hapus, Refresh)
+  document.getElementById('btnSuccess')?.addEventListener('click', () => showNotification('🎉 Notifikasi sukses!', 'success'));
   document.querySelectorAll('.action-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const action = btn.getAttribute('data-action') || btn.innerText.trim();
-      showNotification(`🖱️ Tombol "${action}" diklik (otomatis/manual)`, 'warning');
+      showNotification(`🖱️ Tombol "${action}" diklik`, 'warning');
     });
   });
-  
-  // Link test (tidak pindah halaman)
   document.getElementById('testLink')?.addEventListener('click', (e) => {
     e.preventDefault();
-    showNotification('🔗 Link diklik (tidak keluar halaman)', 'info');
+    showNotification('🔗 Link diklik', 'info');
   });
-  
-  // Tombol loop
   for (let i = 1; i <= 4; i++) {
     const btn = document.getElementById(`btnLoop-${i}`);
     if (btn) {
       btn.addEventListener('click', () => {
-        const resultDiv = document.getElementById('loopResult');
-        resultDiv.innerHTML = `✅ Tombol ${i} ditekan pada ${new Date().toLocaleTimeString()}`;
-        showNotification(`Tombol ${i} ditekan (loop test)`, 'success');
+        document.getElementById('loopResult').innerHTML = `✅ Tombol ${i} ditekan pada ${new Date().toLocaleTimeString()}`;
+        showNotification(`Tombol ${i} (loop test)`, 'success');
       });
     }
   }
-  
-  // Input dan textarea perubahan
-  document.getElementById('demoInput')?.addEventListener('input', (e) => {
-    showNotification(`⌨️ Input berisi: "${e.target.value}"`, 'info');
-  });
-  document.getElementById('demoTextarea')?.addEventListener('input', (e) => {
-    showNotification(`📝 Textarea berubah`, 'info');
-  });
-  document.getElementById('demoSelect')?.addEventListener('change', (e) => {
-    showNotification(`🔽 Dropdown berubah menjadi: ${e.target.options[e.target.selectedIndex].text}`, 'info');
-  });
-  
-  // Copy JSON
-  document.getElementById('copyJsonBtn')?.addEventListener('click', () => {
-    const jsonText = document.getElementById('jsonExample').innerText;
-    navigator.clipboard.writeText(jsonText).then(() => {
-      showNotification('✅ JSON skenario disalin ke clipboard!', 'success');
-    }).catch(() => {
-      showNotification('❌ Gagal menyalin', 'error');
-    });
-  });
+  document.getElementById('demoInput')?.addEventListener('input', (e) => showNotification(`⌨️ Input: ${e.target.value}`, 'info'));
+  document.getElementById('demoTextarea')?.addEventListener('input', () => showNotification('📝 Textarea berubah', 'info'));
+  document.getElementById('demoSelect')?.addEventListener('change', (e) => showNotification(`🔽 Dropdown: ${e.target.options[e.target.selectedIndex].text}`, 'info'));
 
-  // Efek scroll manual untuk feedback
-  const scrollArea = document.getElementById('scrollArea');
-  if (scrollArea) {
-    scrollArea.addEventListener('scroll', () => {
-      // opsional, tidak perlu notifikasi terlalu sering, tapi bisa untuk debug
-      // showNotification('Scroll area di-scroll', 'info');
-    });
-  }
-  // Notifikasi khusus untuk hover (tidak bisa dideteksi dengan event hover biasa, tapi ekstensi bisa mengirim event)
-  // Untuk demo, kita tambahkan efek visual saat hover di elemen (opsional)
-  const style = document.createElement('style');
-  style.textContent = `button:hover, .action-btn:hover, .loop-btn:hover { outline: 2px solid #e94560; transition:0.1s; }`;
-  document.head.appendChild(style);
+  // Download agreement
+  (function() {
+    const checkbox = document.getElementById('agreeCheckbox');
+    const downloadContainer = document.getElementById('downloadLinkContainer');
+    const noAgreeMsg = document.getElementById('noAgreeMessage');
+    const downloadLink = document.getElementById('downloadLink');
+    const DOWNLOAD_URL = 'https://drive.google.com/uc?export=download&id=YOUR_FILE_ID'; // GANTI DENGAN ID FILE ANDA
+    if (downloadLink) downloadLink.href = DOWNLOAD_URL;
+    if (checkbox) {
+      checkbox.addEventListener('change', function() {
+        if (this.checked) { if(downloadContainer) downloadContainer.style.display = 'block'; if(noAgreeMsg) noAgreeMsg.style.display = 'none'; }
+        else { if(downloadContainer) downloadContainer.style.display = 'none'; if(noAgreeMsg) noAgreeMsg.style.display = 'block'; }
+      });
+    }
+    if(noAgreeMsg) noAgreeMsg.style.display = 'none';
+  })();
 </script>
 </body>
 </html>
