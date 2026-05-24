@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <title>Ghost Hands | Form Otomatis dengan Spotlight</title>
+    <title>Ghost Hands | Form Otomatis dengan Spotlight & Highlight</title>
     <style>
-        /* ========== SAMA SEPERTI SEBELUMNYA ========== */
+        /* ========== SAMA DENGAN SEBELUMNYA ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #f1f5f9; font-family: 'Inter', system-ui, sans-serif; padding: 0; color: #0f172a; }
         .spotlight-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(6px); z-index: 9998; pointer-events: none; opacity: 0; transition: opacity 0.25s ease; }
         .spotlight-overlay.active { opacity: 1; }
         .spotlight-element { position: relative; z-index: 9999 !important; box-shadow: 0 0 0 4px #ffffff, 0 0 0 8px #8b5cf6, 0 0 20px rgba(0,0,0,0.3) !important; border-radius: 20px !important; transition: box-shadow 0.2s ease, transform 0.1s ease; transform: scale(1.02); background-color: #ffffff !important; }
+        .btn-highlight { animation: btnFlash 0.3s ease-in-out 2; background-color: #8b5cf6 !important; transform: scale(1.05); }
+        @keyframes btnFlash { 0% { background-color: #0f172a; transform: scale(1); } 50% { background-color: #8b5cf6; transform: scale(1.05); } 100% { background-color: #0f172a; transform: scale(1); } }
         .row-highlight { animation: highlightFlash 1s ease-in-out; background-color: #d9f0ff !important; }
         @keyframes highlightFlash { 0% { background-color: #c7e9ff; } 50% { background-color: #a0d0ff; } 100% { background-color: transparent; } }
         .main-container { max-width: 560px; margin: 0 auto; padding: 20px 16px 40px; }
@@ -28,7 +30,7 @@
         .radio-group label, .checkbox-group label { font-weight: 500; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
         input[type="radio"], input[type="checkbox"] { width: 18px; height: 18px; accent-color: #8b5cf6; }
         .button-group { display: flex; flex-wrap: wrap; gap: 14px; padding: 8px 24px 24px; }
-        .btn { flex: 1; padding: 12px 8px; border-radius: 40px; font-weight: 600; border: none; cursor: pointer; background: #f1f5f9; color: #1e293b; }
+        .btn { flex: 1; padding: 12px 8px; border-radius: 40px; font-weight: 600; border: none; cursor: pointer; background: #f1f5f9; color: #1e293b; transition: 0.1s; }
         .btn-primary { background: #0f172a; color: white; }
         .btn-primary:hover { background: #1e293b; transform: translateY(-1px); }
         .btn-secondary { background: #f1f5f9; border: 1px solid #e2e8f0; }
@@ -70,7 +72,7 @@
 <div id="spotlightOverlay" class="spotlight-overlay"></div>
 
 <script>
-    // ========== SPOTLIGHT DENGAN POLLING (PASTI BEKERJA) ==========
+    // ========== SPOTLIGHT DENGAN POLLING ==========
     const overlay = document.getElementById('spotlightOverlay');
     let currentSpotlightElement = null;
 
@@ -91,16 +93,13 @@
         overlay.classList.remove('active');
     }
 
-    // Polling setiap 100ms untuk mendeteksi elemen aktif (termasuk dari script)
     let lastActive = null;
     setInterval(() => {
         const active = document.activeElement;
         if (active && active !== document.body && active !== document.documentElement) {
-            // Cari elemen yang layak di-spotlight: input, select, textarea, atau container radio/checkbox di dalamnya
             let target = null;
             if (active.matches('input, select, textarea')) {
                 target = active;
-                // Jika radio/checkbox, cari container .radio-group atau .checkbox-group
                 if (active.type === 'radio' || active.type === 'checkbox') {
                     const container = active.closest('.radio-group, .checkbox-group');
                     if (container) target = container;
@@ -121,16 +120,7 @@
         }
     }, 100);
 
-    // Fungsi global untuk pemicu manual (bisa dipanggil dari ekstensi via execute_js)
-    window.triggerSpotlight = function(selector) {
-        const el = document.querySelector(selector);
-        if (el) {
-            el.focus();
-            return true;
-        }
-        console.warn('Element not found:', selector);
-        return false;
-    };
+    window.triggerSpotlight = (selector) => { const el = document.querySelector(selector); if(el) { el.focus(); return true; } return false; };
 
     // ========== DATA STORE ==========
     let dataEntries = [];
@@ -181,7 +171,7 @@
         if (!dataEntries.length) { tableBody.innerHTML = `<tr class="empty-row"><td colspan="10">✨ Belum ada data, isi formulir dan klik Simpan</td></tr>`; return; }
         let html = '';
         dataEntries.forEach((item, idx) => {
-            html += `<tr data-row-idx="${idx}"><td>${idx+1}</td><td>${escapeHtml(item.nama)}</td><td>${escapeHtml(item.email)}</td><td>${item.usia}</td><td>${escapeHtml(item.gender)}</td><td>${escapeHtml(item.hobi)}</td><td>${escapeHtml(item.kota)}</td><td>${escapeHtml(item.komentar)}</td><td>${escapeHtml(item.tanggal)}</td><td><button class="hapus-btn" data-index="${idx}">🗑 Hapus</button></td></tr>`;
+            html += `<tr data-row-idx="${idx}"><tr>${idx+1}<td>${escapeHtml(item.nama)}</td><td>${escapeHtml(item.email)}</td><td>${item.usia}</td><td>${escapeHtml(item.gender)}</td><td>${escapeHtml(item.hobi)}</td><td>${escapeHtml(item.kota)}</td><td>${escapeHtml(item.komentar)}</td><td>${escapeHtml(item.tanggal)}</td><td><button class="hapus-btn" data-index="${idx}">🗑 Hapus</button></td></tr>`;
         });
         tableBody.innerHTML = html;
         if (highlightLast && dataEntries.length) {
@@ -189,12 +179,19 @@
             if (lastRow) {
                 lastRow.classList.add('row-highlight');
                 lastRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                setTimeout(() => lastRow.classList.remove('row-highlight'), 1000);
+                setTimeout(() => lastRow.classList.remove('row-highlight'), 1200);
             }
         }
     }
 
+    function highlightButton(btn) {
+        btn.classList.add('btn-highlight');
+        setTimeout(() => btn.classList.remove('btn-highlight'), 600);
+    }
+
     function handleSave() {
+        // Efek highlight pada tombol simpan
+        highlightButton(simpanBtn);
         const newData = getFormData();
         if (!newData) return false;
         dataEntries.push(newData);
