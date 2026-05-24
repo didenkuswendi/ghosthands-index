@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
     <title>Ghost Hands | Form Otomatis dengan Spotlight & Highlight</title>
     <style>
-        /* ========== SAMA DENGAN SEBELUMNYA ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #f1f5f9; font-family: 'Inter', system-ui, sans-serif; padding: 0; color: #0f172a; }
         .spotlight-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(6px); z-index: 9998; pointer-events: none; opacity: 0; transition: opacity 0.25s ease; }
         .spotlight-overlay.active { opacity: 1; }
         .spotlight-element { position: relative; z-index: 9999 !important; box-shadow: 0 0 0 4px #ffffff, 0 0 0 8px #8b5cf6, 0 0 20px rgba(0,0,0,0.3) !important; border-radius: 20px !important; transition: box-shadow 0.2s ease, transform 0.1s ease; transform: scale(1.02); background-color: #ffffff !important; }
-        .btn-highlight { animation: btnFlash 0.3s ease-in-out 2; background-color: #8b5cf6 !important; transform: scale(1.05); }
+        .btn-highlight { animation: btnFlash 0.3s ease-in-out 2; background-color: #8b5cf6 !important; transform: scale(1.05); box-shadow: 0 0 0 2px white, 0 0 0 4px #8b5cf6; }
         @keyframes btnFlash { 0% { background-color: #0f172a; transform: scale(1); } 50% { background-color: #8b5cf6; transform: scale(1.05); } 100% { background-color: #0f172a; transform: scale(1); } }
         .row-highlight { animation: highlightFlash 1s ease-in-out; background-color: #d9f0ff !important; }
         @keyframes highlightFlash { 0% { background-color: #c7e9ff; } 50% { background-color: #a0d0ff; } 100% { background-color: transparent; } }
@@ -26,7 +25,7 @@
         .input-group label { font-size: 0.85rem; font-weight: 600; color: #1e293b; display: flex; align-items: center; gap: 6px; }
         input, select, textarea { width: 100%; padding: 12px 14px; font-size: 0.95rem; border: 1.5px solid #e2e8f0; border-radius: 20px; background: #fefefe; transition: all 0.2s; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15); }
-        .radio-group, .checkbox-group { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 6px; background: #f8fafc; padding: 12px 14px; border-radius: 28px; border: 1px solid #eef2ff; }
+        .radio-group, .checkbox-group { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 6px; background: #f8fafc; padding: 12px 14px; border-radius: 28px; border: 1px solid #eef2ff; transition: all 0.1s; }
         .radio-group label, .checkbox-group label { font-weight: 500; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
         input[type="radio"], input[type="checkbox"] { width: 18px; height: 18px; accent-color: #8b5cf6; }
         .button-group { display: flex; flex-wrap: wrap; gap: 14px; padding: 8px 24px 24px; }
@@ -171,7 +170,7 @@
         if (!dataEntries.length) { tableBody.innerHTML = `<tr class="empty-row"><td colspan="10">✨ Belum ada data, isi formulir dan klik Simpan</td></tr>`; return; }
         let html = '';
         dataEntries.forEach((item, idx) => {
-            html += `<tr data-row-idx="${idx}"><tr>${idx+1}<td>${escapeHtml(item.nama)}</td><td>${escapeHtml(item.email)}</td><td>${item.usia}</td><td>${escapeHtml(item.gender)}</td><td>${escapeHtml(item.hobi)}</td><td>${escapeHtml(item.kota)}</td><td>${escapeHtml(item.komentar)}</td><td>${escapeHtml(item.tanggal)}</td><td><button class="hapus-btn" data-index="${idx}">🗑 Hapus</button></td></tr>`;
+            html += `<tr data-row-idx="${idx}"><td>${idx+1}</td><td>${escapeHtml(item.nama)}</td><td>${escapeHtml(item.email)}</td><td>${item.usia}</td><td>${escapeHtml(item.gender)}</td><td>${escapeHtml(item.hobi)}</td><td>${escapeHtml(item.kota)}</td><td>${escapeHtml(item.komentar)}</td><td>${escapeHtml(item.tanggal)}</td><td><button class="hapus-btn" data-index="${idx}">🗑 Hapus</button></td></tr>`;
         });
         tableBody.innerHTML = html;
         if (highlightLast && dataEntries.length) {
@@ -190,7 +189,9 @@
     }
 
     function handleSave() {
-        // Efek highlight pada tombol simpan
+        // Sembunyikan overlay agar tombol dan tabel tidak gelap
+        hideSpotlight();
+        // Highlight tombol
         highlightButton(simpanBtn);
         const newData = getFormData();
         if (!newData) return false;
