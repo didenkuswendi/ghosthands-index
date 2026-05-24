@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <title>Ghost Hands | Form Otomatis</title>
+    <title>Ghost Hands | Form Otomatis dengan Spotlight</title>
     <style>
         * {
             margin: 0;
@@ -19,14 +19,55 @@
             color: #0f172a;
         }
 
-        /* Container utama – card style tanpa header internal agar sticky bersih */
+        /* OVERLAY SPOTLIGHT */
+        .spotlight-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px);
+            z-index: 9998;
+            pointer-events: none; /* agar tidak mengganggu interaksi */
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+        .spotlight-overlay.active {
+            opacity: 1;
+        }
+
+        /* Elemen yang di-spotlight */
+        .spotlight-element {
+            position: relative;
+            z-index: 9999 !important;
+            box-shadow: 0 0 0 4px #ffffff, 0 0 0 8px #8b5cf6, 0 0 20px rgba(0,0,0,0.3) !important;
+            border-radius: 20px !important;
+            transition: box-shadow 0.2s ease, transform 0.1s ease;
+            transform: scale(1.02);
+            background-color: #ffffff !important;
+        }
+
+        /* Highlight sementara untuk baris tabel baru */
+        .row-highlight {
+            animation: highlightFlash 1s ease-in-out;
+            background-color: #d9f0ff !important;
+        }
+
+        @keyframes highlightFlash {
+            0% { background-color: #c7e9ff; }
+            50% { background-color: #a0d0ff; }
+            100% { background-color: transparent; }
+        }
+
+        /* Container utama */
         .main-container {
             max-width: 560px;
             margin: 0 auto;
             padding: 20px 16px 40px;
         }
 
-        /* ========== STICKY HEADER ========== */
+        /* Sticky header */
         .sticky-header {
             position: sticky;
             top: 0;
@@ -37,14 +78,10 @@
             padding: 20px 20px 16px 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02), 0 1px 0 rgba(0, 0, 0, 0.02);
             transition: box-shadow 0.2s ease;
-            backdrop-filter: blur(0px);
         }
-        
-        /* efek shadow lebih dalam saat sticky (optional) */
         .sticky-header.stuck {
             box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.02);
         }
-
         .sticky-header h1 {
             font-size: 1.9rem;
             font-weight: 700;
@@ -57,14 +94,12 @@
             align-items: center;
             gap: 8px;
         }
-
         .sticky-header h1 span {
             font-size: 2rem;
             background: none;
             -webkit-background-clip: unset;
             color: #334155;
         }
-
         .subhead-sticky {
             font-size: 0.85rem;
             color: #5b6e8c;
@@ -74,44 +109,36 @@
             padding-left: 12px;
         }
 
-        /* card formulir + tabel */
+        /* form card */
         .form-card {
             background: #ffffff;
             border-radius: 32px;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
             overflow: hidden;
-            transition: all 0.2s ease;
         }
-
-        /* form styling */
         .form-section {
             padding: 24px 24px 16px;
         }
-
         .input-group {
             margin-bottom: 20px;
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
-
         .input-group label {
             font-size: 0.85rem;
             font-weight: 600;
             color: #1e293b;
-            letter-spacing: -0.2px;
             display: flex;
             align-items: center;
             gap: 6px;
         }
-
         .input-group label i {
             font-weight: 400;
             color: #8b5cf6;
             font-style: normal;
             font-size: 0.9rem;
         }
-
         input, select, textarea {
             width: 100%;
             padding: 12px 14px;
@@ -123,14 +150,11 @@
             font-family: inherit;
             color: #0f172a;
         }
-
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #8b5cf6;
             box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
         }
-
-        /* radio & checkbox inline modern */
         .radio-group, .checkbox-group {
             display: flex;
             flex-wrap: wrap;
@@ -141,7 +165,6 @@
             border-radius: 28px;
             border: 1px solid #eef2ff;
         }
-
         .radio-group label, .checkbox-group label {
             font-weight: 500;
             font-size: 0.85rem;
@@ -151,7 +174,6 @@
             cursor: pointer;
             color: #1f2a44;
         }
-
         input[type="radio"], input[type="checkbox"] {
             width: 18px;
             height: 18px;
@@ -159,15 +181,12 @@
             margin: 0;
             vertical-align: middle;
         }
-
-        /* tombol aksi */
         .button-group {
             display: flex;
             flex-wrap: wrap;
             gap: 14px;
             padding: 8px 24px 24px;
         }
-
         .btn {
             flex: 1;
             padding: 12px 8px;
@@ -181,36 +200,28 @@
             color: #1e293b;
             box-shadow: 0 1px 1px rgba(0,0,0,0.02);
         }
-
         .btn-primary {
             background: #0f172a;
             color: white;
             box-shadow: 0 4px 8px -2px rgba(15, 23, 42, 0.2);
         }
-
         .btn-primary:hover {
             background: #1e293b;
             transform: translateY(-1px);
         }
-
         .btn-secondary {
             background: #f1f5f9;
             border: 1px solid #e2e8f0;
         }
-
         .btn-secondary:hover {
             background: #e6edf5;
         }
-
         .btn:active {
             transform: translateY(1px);
         }
-
-        /* tabel responsive */
         .table-wrapper {
             padding: 0 16px 28px 16px;
         }
-
         .table-container {
             overflow-x: auto;
             border-radius: 24px;
@@ -218,14 +229,12 @@
             background: #ffffff;
             box-shadow: 0 1px 2px rgba(0,0,0,0.02);
         }
-
         .data-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.75rem;
             min-width: 680px;
         }
-
         .data-table th {
             background: #f8fafd;
             padding: 12px 8px;
@@ -236,7 +245,6 @@
             font-size: 0.7rem;
             letter-spacing: 0.3px;
         }
-
         .data-table td {
             padding: 12px 8px;
             border-bottom: 1px solid #f0f4f9;
@@ -244,11 +252,9 @@
             vertical-align: top;
             word-break: break-word;
         }
-
         .data-table tr:last-child td {
             border-bottom: none;
         }
-
         .hapus-btn {
             background: none;
             border: none;
@@ -261,20 +267,16 @@
             background: #fff2f0;
             transition: 0.1s;
         }
-
         .hapus-btn:hover {
             background: #fee2e2;
             color: #b91c1c;
         }
-
         .empty-row td {
             text-align: center;
             padding: 32px 8px;
             color: #8a99b4;
             font-style: italic;
         }
-
-        /* notifikasi kecil */
         .toast-msg {
             position: fixed;
             bottom: 20px;
@@ -287,13 +289,12 @@
             border-radius: 60px;
             font-size: 0.75rem;
             font-weight: 500;
-            z-index: 999;
+            z-index: 10000;
             pointer-events: none;
             opacity: 0;
             transition: opacity 0.2s;
             white-space: nowrap;
         }
-
         @media (max-width: 500px) {
             .main-container {
                 padding: 12px 12px 30px;
@@ -308,8 +309,6 @@
                 padding: 10px 8px;
             }
         }
-
-        /* scrollbar halus */
         ::-webkit-scrollbar {
             height: 4px;
             width: 4px;
@@ -326,34 +325,26 @@
 </head>
 <body>
 <div class="main-container">
-    <!-- HEADER STICKY - akan tetap di atas saat scroll -->
     <div class="sticky-header" id="stickyHeader">
-        <h1>
-            GHOST HANDS 👻
-        </h1>
+        <h1>GHOST HANDS 👻</h1>
         <div class="subhead-sticky">Otomasi berbagai macam jenis web otomatis</div>
     </div>
 
     <div class="form-card">
         <div class="form-section">
             <form id="mainForm" autocomplete="off">
-                <!-- Nama lengkap (text) -->
                 <div class="input-group">
                     <label><i>👤</i> Nama Lengkap</label>
                     <input type="text" id="nama" placeholder="cth: Angga Wijaya" required>
                 </div>
-                <!-- Email (email) -->
                 <div class="input-group">
                     <label><i>📧</i> Email</label>
                     <input type="email" id="email" placeholder="user@example.com" required>
                 </div>
-                <!-- Usia (number) -->
                 <div class="input-group">
                     <label><i>📅</i> Usia</label>
                     <input type="number" id="usia" min="1" max="120" placeholder="20" required>
                 </div>
-
-                <!-- Jenis Kelamin (radio) -->
                 <div class="input-group">
                     <label><i>⚧</i> Jenis Kelamin</label>
                     <div class="radio-group" id="radioGroup">
@@ -361,8 +352,6 @@
                         <label><input type="radio" name="gender" value="Perempuan"> Perempuan</label>
                     </div>
                 </div>
-
-                <!-- Hobi (checkbox) -->
                 <div class="input-group">
                     <label><i>🎯</i> Hobi</label>
                     <div class="checkbox-group" id="hobiGroup">
@@ -372,8 +361,6 @@
                         <label><input type="checkbox" value="Traveling"> Traveling</label>
                     </div>
                 </div>
-
-                <!-- Kota (select) -->
                 <div class="input-group">
                     <label><i>🏙️</i> Kota Domisili</label>
                     <select id="kota">
@@ -385,14 +372,10 @@
                         <option value="Yogyakarta">Yogyakarta</option>
                     </select>
                 </div>
-
-                <!-- Komentar (textarea) -->
                 <div class="input-group">
                     <label><i>💬</i> Komentar / Catatan</label>
                     <textarea id="komentar" rows="2" placeholder="Tulis sesuatu..."></textarea>
                 </div>
-
-                <!-- Tanggal (date) -->
                 <div class="input-group">
                     <label><i>📆</i> Tanggal Registrasi</label>
                     <input type="date" id="tanggal">
@@ -409,9 +392,7 @@
             <div class="table-container">
                 <table class="data-table" id="dataTable">
                     <thead>
-                        <tr>
-                            <th>#</th><th>Nama</th><th>Email</th><th>Usia</th><th>JK</th><th>Hobi</th><th>Kota</th><th>Komentar</th><th>Tgl</th><th>Aksi</th>
-                        </tr>
+                        <tr><th>#</th><th>Nama</th><th>Email</th><th>Usia</th><th>JK</th><th>Hobi</th><th>Kota</th><th>Komentar</th><th>Tgl</th><th>Aksi</th></tr>
                     </thead>
                     <tbody id="tableBody">
                         <tr class="empty-row"><td colspan="10">✨ Belum ada data, isi formulir dan klik Simpan</td></tr>
@@ -422,12 +403,15 @@
     </div>
 </div>
 <div id="toastMsg" class="toast-msg"></div>
+<!-- Overlay untuk spotlight -->
+<div id="spotlightOverlay" class="spotlight-overlay"></div>
 
 <script>
     // ======================== STORE DATA ========================
-    let dataEntries = [];   // array of objects
+    let dataEntries = [];
+    let currentSpotlightElement = null;
 
-    // DOM elements
+    const overlay = document.getElementById('spotlightOverlay');
     const form = document.getElementById('mainForm');
     const namaInput = document.getElementById('nama');
     const emailInput = document.getElementById('email');
@@ -441,7 +425,51 @@
     const resetBtn = document.getElementById('resetBtn');
     const tableBody = document.getElementById('tableBody');
 
-    // helper toast notifikasi modern
+    // ---------- SPOTLIGHT FUNCTIONS ----------
+    function showSpotlight(element) {
+        if (currentSpotlightElement === element) return;
+        hideSpotlight();
+        if (!element) return;
+        // tambahkan class spotlight ke elemen
+        element.classList.add('spotlight-element');
+        currentSpotlightElement = element;
+        overlay.classList.add('active');
+    }
+
+    function hideSpotlight() {
+        if (currentSpotlightElement) {
+            currentSpotlightElement.classList.remove('spotlight-element');
+            currentSpotlightElement = null;
+        }
+        overlay.classList.remove('active');
+    }
+
+    // Pasang event focus ke semua input, select, textarea, dan juga container radio/checkbox (supaya grup terhighlight)
+    function attachSpotlightEvents() {
+        const focusableElements = document.querySelectorAll('input, select, textarea');
+        focusableElements.forEach(el => {
+            el.addEventListener('focus', () => showSpotlight(el));
+            el.addEventListener('blur', () => hideSpotlight());
+        });
+        // Untuk grup radio/checkbox, highlight container-nya? Bisa juga highlight container radio group
+        // Agar lebih cantik, kita bisa highlight parent .radio-group atau .checkbox-group saat salah satu radio/checkbox di-focus
+        const radioContainer = document.getElementById('radioGroup');
+        const checkboxContainer = document.getElementById('hobiGroup');
+        if (radioContainer) {
+            radioContainer.querySelectorAll('input').forEach(radio => {
+                radio.addEventListener('focus', () => showSpotlight(radioContainer));
+                radio.addEventListener('blur', () => hideSpotlight());
+            });
+        }
+        if (checkboxContainer) {
+            checkboxContainer.querySelectorAll('input').forEach(cb => {
+                cb.addEventListener('focus', () => showSpotlight(checkboxContainer));
+                cb.addEventListener('blur', () => hideSpotlight());
+            });
+        }
+    }
+
+    // ---------- TOAST ----------
     function showToast(message, isError = false) {
         const toast = document.getElementById('toastMsg');
         toast.textContent = message;
@@ -452,75 +480,48 @@
         }, 2200);
     }
 
-    // Ambil data dari form (validasi + return object)
+    // ---------- FORM DATA ----------
     function getFormData() {
-        // validasi required
         const nama = namaInput.value.trim();
-        if (nama === "") {
-            showToast("❌ Nama lengkap tidak boleh kosong", true);
-            return null;
-        }
+        if (nama === "") { showToast("❌ Nama lengkap tidak boleh kosong", true); return null; }
         const email = emailInput.value.trim();
-        if (email === "") {
-            showToast("❌ Email wajib diisi", true);
-            return null;
-        }
-        // validasi email sederhana
+        if (email === "") { showToast("❌ Email wajib diisi", true); return null; }
         const emailPattern = /^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/;
-        if (!emailPattern.test(email)) {
-            showToast("❌ Format email tidak valid (contoh: nama@domain.com)", true);
-            return null;
-        }
+        if (!emailPattern.test(email)) { showToast("❌ Format email tidak valid (contoh: nama@domain.com)", true); return null; }
         const usia = usiaInput.value;
-        if (usia === "" || isNaN(usia) || Number(usia) < 1 || Number(usia) > 120) {
-            showToast("❌ Usia harus diisi dengan angka antara 1 - 120", true);
-            return null;
-        }
+        if (usia === "" || isNaN(usia) || Number(usia) < 1 || Number(usia) > 120) { showToast("❌ Usia harus diisi dengan angka antara 1 - 120", true); return null; }
         const usiaNum = parseInt(usia, 10);
-
-        // gender : cari value yang checked
         let selectedGender = "Laki-laki";
-        for (let radio of genderRadios) {
-            if (radio.checked) {
-                selectedGender = radio.value;
-                break;
-            }
-        }
-
-        // hobi : ambil semua checkbox yang tercentang
+        for (let radio of genderRadios) if (radio.checked) { selectedGender = radio.value; break; }
         let selectedHobbies = [];
-        hobiCheckboxes.forEach(cb => {
-            if (cb.checked) selectedHobbies.push(cb.value);
-        });
+        hobiCheckboxes.forEach(cb => { if (cb.checked) selectedHobbies.push(cb.value); });
         const hobiStr = selectedHobbies.length > 0 ? selectedHobbies.join(", ") : "-";
-
         const kota = kotaSelect.value;
         const komentar = komentarText.value.trim() === "" ? "-" : komentarText.value.trim();
         const tanggal = tanggalInput.value === "" ? "-" : tanggalInput.value;
-
-        return {
-            nama: nama,
-            email: email,
-            usia: usiaNum,
-            gender: selectedGender,
-            hobi: hobiStr,
-            kota: kota,
-            komentar: komentar,
-            tanggal: tanggal
-        };
+        return { nama, email, usia: usiaNum, gender: selectedGender, hobi: hobiStr, kota, komentar, tanggal };
     }
 
-    // Render tabel berdasarkan dataEntries
-    function renderTable() {
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // RENDER TABLE dan highlight baris terakhir (jika parameter highlightLast true)
+    function renderTable(highlightLast = false) {
         if (!tableBody) return;
         if (dataEntries.length === 0) {
             tableBody.innerHTML = `<tr class="empty-row"><td colspan="10">✨ Belum ada data, isi formulir dan klik Simpan</td></tr>`;
             return;
         }
-
         let html = '';
         dataEntries.forEach((item, idx) => {
-            html += `<tr>
+            html += `<tr data-row-idx="${idx}">
                         <td>${idx + 1}</td>
                         <td>${escapeHtml(item.nama)}</td>
                         <td>${escapeHtml(item.email)}</td>
@@ -534,98 +535,68 @@
                       </tr>`;
         });
         tableBody.innerHTML = html;
+
+        if (highlightLast && dataEntries.length > 0) {
+            const lastRow = tableBody.querySelector(`tr[data-row-idx="${dataEntries.length-1}"]`);
+            if (lastRow) {
+                lastRow.classList.add('row-highlight');
+                lastRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(() => {
+                    lastRow.classList.remove('row-highlight');
+                }, 1000);
+            }
+        }
     }
 
-    // simple escape XSS
-    function escapeHtml(str) {
-        if (!str) return "";
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-            return c;
-        });
-    }
-
-    // function Simpan data (tambah ke tabel)
+    // Simpan data
     function handleSave() {
         const newData = getFormData();
-        if (!newData) return false; // validasi gagal
-
-        // tambahkan ke array store
+        if (!newData) return false;
         dataEntries.push(newData);
-        renderTable();
+        renderTable(true);  // highlight baris baru
         showToast(`✅ Data "${newData.nama}" berhasil disimpan!`, false);
-        // Optional: form TIDAK direset otomatis agar pengguna bisa modifikasi lanjutan (tombol reset terpisah)
         return true;
     }
 
-    // Reset formulir ke keadaan awal (tanpa menghapus data tabel)
     function resetFormFields() {
-        // reset text / number / email / textarea
         namaInput.value = '';
         emailInput.value = '';
         usiaInput.value = '';
         komentarText.value = '';
         tanggalInput.value = '';
-
-        // reset radio : set Laki-laki sebagai default
-        for (let radio of genderRadios) {
-            if (radio.value === "Laki-laki") {
-                radio.checked = true;
-            } else {
-                radio.checked = false;
-            }
-        }
-
-        // reset semua checkbox hobi
-        hobiCheckboxes.forEach(cb => {
-            cb.checked = false;
-        });
-
-        // reset select ke opsi pertama (Jakarta)
+        for (let radio of genderRadios) radio.checked = (radio.value === "Laki-laki");
+        hobiCheckboxes.forEach(cb => cb.checked = false);
         kotaSelect.selectedIndex = 0;
-
-        // hapus style error jika ada
         showToast("🔄 Form telah direset", false);
     }
 
-    // Event Delegation untuk tombol hapus (karena tombol dinamis)
     function setupTableDelegation() {
         const tableContainer = document.querySelector('.table-container');
         if (!tableContainer) return;
         tableContainer.addEventListener('click', (e) => {
             const btn = e.target.closest('.hapus-btn');
             if (!btn) return;
-            const indexAttr = btn.getAttribute('data-index');
-            if (indexAttr !== null) {
-                const idx = parseInt(indexAttr, 10);
-                if (!isNaN(idx) && idx >= 0 && idx < dataEntries.length) {
-                    const deletedName = dataEntries[idx].nama;
-                    dataEntries.splice(idx, 1);
-                    renderTable();
-                    showToast(`🗑 Data "${deletedName}" dihapus`, false);
-                }
+            const idx = btn.getAttribute('data-index');
+            if (idx !== null && !isNaN(idx) && idx >= 0 && idx < dataEntries.length) {
+                const deletedName = dataEntries[idx].nama;
+                dataEntries.splice(idx, 1);
+                renderTable(false);
+                showToast(`🗑 Data "${deletedName}" dihapus`, false);
             }
         });
     }
 
-    // Tambahan: Inisialisasi event listener untuk tombol simpan dan reset
     function initEvents() {
         simpanBtn.addEventListener('click', (e) => {
             e.preventDefault();
             handleSave();
         });
-
         resetBtn.addEventListener('click', (e) => {
             e.preventDefault();
             resetFormFields();
         });
     }
 
-    // tambahan biar enter tidak mengirim form aneh (optional)
     function preventEnterSubmit() {
         form.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
@@ -635,30 +606,19 @@
         });
     }
 
-    // efek shadow dinamis saat header sticky (memberi kesan lebih dalam)
     function initStickyShadow() {
         const header = document.getElementById('stickyHeader');
         if (!header) return;
-        const observer = new IntersectionObserver(
-            ([e]) => {
-                // jika elemen tidak terikat di viewport (sudah sticky) maka tambah class stuck
-                // cara sederhana: deteksi jika bounding top <= 0
-                if (e.boundingClientRect.top <= 0) {
-                    header.classList.add('stuck');
-                } else {
-                    header.classList.remove('stuck');
-                }
-            },
-            { threshold: [0] }
-        );
+        const observer = new IntersectionObserver(([e]) => {
+            if (e.boundingClientRect.top <= 0) header.classList.add('stuck');
+            else header.classList.remove('stuck');
+        }, { threshold: [0] });
         observer.observe(header);
     }
 
-    // Sample data awal (satu contoh untuk demo)
     function initSampleData() {
         if (dataEntries.length === 0) {
-            // contoh data pertama (menunjukkan berbagai macam element)
-            const sample = {
+            dataEntries.push({
                 nama: "Alex Ghost",
                 email: "alex@ghosthands.com",
                 usia: 27,
@@ -667,19 +627,18 @@
                 kota: "Bandung",
                 komentar: "Otomatisasi web keren!",
                 tanggal: "2025-03-18"
-            };
-            dataEntries.push(sample);
-            renderTable();
+            });
+            renderTable(false);
         }
     }
 
-    // initialization
     function init() {
+        attachSpotlightEvents();
         initEvents();
         setupTableDelegation();
         preventEnterSubmit();
-        initSampleData();   // biar ada data awal (optional, tapi user bisa hapus)
-        initStickyShadow(); // efek bayangan dinamis untuk sticky header
+        initSampleData();
+        initStickyShadow();
     }
 
     init();
