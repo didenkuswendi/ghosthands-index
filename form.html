@@ -29,7 +29,7 @@
             background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(6px);
             z-index: 9998;
-            pointer-events: none; /* agar tidak mengganggu interaksi */
+            pointer-events: none;
             opacity: 0;
             transition: opacity 0.25s ease;
         }
@@ -403,16 +403,60 @@
     </div>
 </div>
 <div id="toastMsg" class="toast-msg"></div>
-<!-- Overlay untuk spotlight -->
 <div id="spotlightOverlay" class="spotlight-overlay"></div>
 
 <script>
-    // ======================== STORE DATA ========================
-    let dataEntries = [];
+    // ========== SPOTLIGHT DENGAN FOCUSIN ==========
+    const overlay = document.getElementById('spotlightOverlay');
     let currentSpotlightElement = null;
 
-    const overlay = document.getElementById('spotlightOverlay');
-    const form = document.getElementById('mainForm');
+    function showSpotlight(element) {
+        if (!element || element === currentSpotlightElement) return;
+        hideSpotlight();
+        element.classList.add('spotlight-element');
+        currentSpotlightElement = element;
+        overlay.classList.add('active');
+        // Scroll elemen ke tengah viewport secara smooth
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function hideSpotlight() {
+        if (currentSpotlightElement) {
+            currentSpotlightElement.classList.remove('spotlight-element');
+            currentSpotlightElement = null;
+        }
+        overlay.classList.remove('active');
+    }
+
+    // Event capture untuk menangkap focusin (bahkan dari script)
+    document.addEventListener('focusin', (e) => {
+        let target = e.target;
+        if (target.matches('input, select, textarea')) {
+            showSpotlight(target);
+        } else if (target.closest('.radio-group') || target.closest('.checkbox-group')) {
+            let container = target.closest('.radio-group, .checkbox-group');
+            if (container) showSpotlight(container);
+        }
+    });
+    document.addEventListener('focusout', () => {
+        hideSpotlight();
+    });
+
+    // Fungsi global untuk trigger highlight dari luar (console atau ekstensi)
+    window.triggerSpotlight = function(selector) {
+        const el = document.querySelector(selector);
+        if (el) {
+            el.focus(); // memicu focusin
+            return true;
+        }
+        console.warn('Element not found:', selector);
+        return false;
+    };
+
+    // ========== DATA STORE ==========
+    let dataEntries = [];
+
+    // DOM elements
     const namaInput = document.getElementById('nama');
     const emailInput = document.getElementById('email');
     const usiaInput = document.getElementById('usia');
@@ -425,71 +469,23 @@
     const resetBtn = document.getElementById('resetBtn');
     const tableBody = document.getElementById('tableBody');
 
-    // ---------- SPOTLIGHT FUNCTIONS ----------
-    function showSpotlight(element) {
-        if (currentSpotlightElement === element) return;
-        hideSpotlight();
-        if (!element) return;
-        // tambahkan class spotlight ke elemen
-        element.classList.add('spotlight-element');
-        currentSpotlightElement = element;
-        overlay.classList.add('active');
-    }
-
-    function hideSpotlight() {
-        if (currentSpotlightElement) {
-            currentSpotlightElement.classList.remove('spotlight-element');
-            currentSpotlightElement = null;
-        }
-        overlay.classList.remove('active');
-    }
-
-    // Pasang event focus ke semua input, select, textarea, dan juga container radio/checkbox (supaya grup terhighlight)
-    function attachSpotlightEvents() {
-        const focusableElements = document.querySelectorAll('input, select, textarea');
-        focusableElements.forEach(el => {
-            el.addEventListener('focus', () => showSpotlight(el));
-            el.addEventListener('blur', () => hideSpotlight());
-        });
-        // Untuk grup radio/checkbox, highlight container-nya? Bisa juga highlight container radio group
-        // Agar lebih cantik, kita bisa highlight parent .radio-group atau .checkbox-group saat salah satu radio/checkbox di-focus
-        const radioContainer = document.getElementById('radioGroup');
-        const checkboxContainer = document.getElementById('hobiGroup');
-        if (radioContainer) {
-            radioContainer.querySelectorAll('input').forEach(radio => {
-                radio.addEventListener('focus', () => showSpotlight(radioContainer));
-                radio.addEventListener('blur', () => hideSpotlight());
-            });
-        }
-        if (checkboxContainer) {
-            checkboxContainer.querySelectorAll('input').forEach(cb => {
-                cb.addEventListener('focus', () => showSpotlight(checkboxContainer));
-                cb.addEventListener('blur', () => hideSpotlight());
-            });
-        }
-    }
-
-    // ---------- TOAST ----------
     function showToast(message, isError = false) {
         const toast = document.getElementById('toastMsg');
         toast.textContent = message;
         toast.style.opacity = '1';
         toast.style.backgroundColor = isError ? '#b91c1ce6' : '#0f172ae6';
-        setTimeout(() => {
-            toast.style.opacity = '0';
-        }, 2200);
+        setTimeout(() => { toast.style.opacity = '0'; }, 2200);
     }
 
-    // ---------- FORM DATA ----------
     function getFormData() {
         const nama = namaInput.value.trim();
         if (nama === "") { showToast("❌ Nama lengkap tidak boleh kosong", true); return null; }
         const email = emailInput.value.trim();
         if (email === "") { showToast("❌ Email wajib diisi", true); return null; }
         const emailPattern = /^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/;
-        if (!emailPattern.test(email)) { showToast("❌ Format email tidak valid (contoh: nama@domain.com)", true); return null; }
+        if (!emailPattern.test(email)) { showToast("❌ Format email tidak valid", true); return null; }
         const usia = usiaInput.value;
-        if (usia === "" || isNaN(usia) || Number(usia) < 1 || Number(usia) > 120) { showToast("❌ Usia harus diisi dengan angka antara 1 - 120", true); return null; }
+        if (usia === "" || isNaN(usia) || Number(usia) < 1 || Number(usia) > 120) { showToast("❌ Usia harus 1-120", true); return null; }
         const usiaNum = parseInt(usia, 10);
         let selectedGender = "Laki-laki";
         for (let radio of genderRadios) if (radio.checked) { selectedGender = radio.value; break; }
@@ -512,7 +508,6 @@
         });
     }
 
-    // RENDER TABLE dan highlight baris terakhir (jika parameter highlightLast true)
     function renderTable(highlightLast = false) {
         if (!tableBody) return;
         if (dataEntries.length === 0) {
@@ -532,7 +527,7 @@
                         <td style="max-width:160px;">${escapeHtml(item.komentar)}</td>
                         <td>${escapeHtml(item.tanggal)}</td>
                         <td><button class="hapus-btn" data-index="${idx}">🗑 Hapus</button></td>
-                      </tr>`;
+                      </td>`;
         });
         tableBody.innerHTML = html;
 
@@ -541,19 +536,16 @@
             if (lastRow) {
                 lastRow.classList.add('row-highlight');
                 lastRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                setTimeout(() => {
-                    lastRow.classList.remove('row-highlight');
-                }, 1000);
+                setTimeout(() => lastRow.classList.remove('row-highlight'), 1000);
             }
         }
     }
 
-    // Simpan data
     function handleSave() {
         const newData = getFormData();
         if (!newData) return false;
         dataEntries.push(newData);
-        renderTable(true);  // highlight baris baru
+        renderTable(true);
         showToast(`✅ Data "${newData.nama}" berhasil disimpan!`, false);
         return true;
     }
@@ -598,7 +590,7 @@
     }
 
     function preventEnterSubmit() {
-        form.addEventListener('keypress', (e) => {
+        document.getElementById('mainForm').addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
                 e.preventDefault();
                 handleSave();
@@ -633,7 +625,6 @@
     }
 
     function init() {
-        attachSpotlightEvents();
         initEvents();
         setupTableDelegation();
         preventEnterSubmit();
