@@ -66,14 +66,14 @@
             </form>
         </div>
         <div class="button-group"><button id="simpanBtn" class="btn btn-primary">💾 Simpan Data</button><button id="resetBtn" class="btn btn-secondary">🔄 Reset Form</button></div>
-        <div class="table-wrapper"><div class="table-container"><table class="data-table" id="dataTable"><thead><tr><th>#</th><th>Nama</th><th>Email</th><th>Usia</th><th>JK</th><th>Hobi</th><th>Kota</th><th>Komentar</th><th>Tgl</th><th>Aksi</th></tr></thead><tbody id="tableBody"><tr class="empty-row"><td colspan="10">✨ Belum ada data, isi formulir dan klik Simpan</td></tr></tbody></table></div></div>
+        <div class="table-wrapper"><div class="table-container"><table class="data-table" id="dataTable"><thead><tr><th>#</th><th>Nama</th><th>Email</th><th>Usia</th><th>JK</th><th>Hobi</th><th>Kota</th><th>Komentar</th><th>Tgl</th><th>Aksi</th></tr></thead><tbody id="tableBody"><tr class="empty-row"><td colspan="10">✨ Belum ada data, isi formulir dan klik Simpan</td></tr></tbody>}</div></div>
     </div>
 </div>
 <div id="toastMsg" class="toast-msg"></div>
 <div id="spotlightOverlay" class="spotlight-overlay"></div>
 
 <script>
-    // ========== SPOTLIGHT DENGAN POLLING + EVENT KLIK/CHANGE + MUTATION OBSERVER ==========
+    // ========== SPOTLIGHT DENGAN POLLING FOKUS + POLLING NILAI UNTUK RADIO/CHECKBOX/SELECT ==========
     const overlay = document.getElementById('spotlightOverlay');
     let currentSpotlightElement = null;
 
@@ -94,7 +94,7 @@
         overlay.classList.remove('active');
     }
 
-    // Polling untuk menangkap fokus (input teks, textarea, select, dll)
+    // --- Polling untuk fokus (input, textarea, select) ---
     let lastActive = null;
     setInterval(() => {
         const active = document.activeElement;
@@ -123,7 +123,46 @@
         }
     }, 100);
 
-    // Event listener untuk klik dan change (manual)
+    // --- Polling untuk mendeteksi perubahan nilai/checked secara programatis (Ghost Hands) ---
+    // Simpan status sebelumnya untuk radio, checkbox, select
+    const radios = document.querySelectorAll('input[type="radio"]');
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    const selects = document.querySelectorAll('select');
+    
+    let prevRadioValues = Array.from(radios).map(r => r.checked);
+    let prevCheckboxValues = Array.from(checkboxes).map(c => c.checked);
+    let prevSelectValues = Array.from(selects).map(s => s.value);
+    
+    setInterval(() => {
+        // Cek radio
+        radios.forEach((el, idx) => {
+            const current = el.checked;
+            if (current !== prevRadioValues[idx]) {
+                prevRadioValues[idx] = current;
+                const container = el.closest('.radio-group, .checkbox-group');
+                if (container) showSpotlight(container);
+            }
+        });
+        // Cek checkbox
+        checkboxes.forEach((el, idx) => {
+            const current = el.checked;
+            if (current !== prevCheckboxValues[idx]) {
+                prevCheckboxValues[idx] = current;
+                const container = el.closest('.radio-group, .checkbox-group');
+                if (container) showSpotlight(container);
+            }
+        });
+        // Cek select
+        selects.forEach((el, idx) => {
+            const current = el.value;
+            if (current !== prevSelectValues[idx]) {
+                prevSelectValues[idx] = current;
+                showSpotlight(el);
+            }
+        });
+    }, 200);
+
+    // Event listener untuk klik dan change (manual) agar tetap responsif
     function attachInteractionListeners() {
         const allRadios = document.querySelectorAll('input[type="radio"], input[type="checkbox"]');
         allRadios.forEach(el => {
@@ -147,36 +186,13 @@
             });
         });
 
-        // Input teks/textarea: saat focus
         const inputs = document.querySelectorAll('input:not([type="radio"]):not([type="checkbox"]), textarea');
         inputs.forEach(inp => {
             inp.addEventListener('focus', () => showSpotlight(inp));
         });
     }
 
-    // MutationObserver untuk mendeteksi perubahan programatis dari Ghost Hands
-    function observeFormElements() {
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.type === 'attributes' && (mutation.attributeName === 'checked' || mutation.attributeName === 'value')) {
-                    const target = mutation.target;
-                    if (target.matches && target.matches('input[type="radio"], input[type="checkbox"]')) {
-                        const container = target.closest('.radio-group, .checkbox-group');
-                        if (container) showSpotlight(container);
-                    } else if (target.matches && target.matches('select')) {
-                        showSpotlight(target);
-                    } else if (target.matches && target.matches('input, textarea')) {
-                        showSpotlight(target);
-                    }
-                }
-            });
-        });
-        const elements = document.querySelectorAll('input[type="radio"], input[type="checkbox"], select, input:not([type="hidden"]), textarea');
-        elements.forEach(el => observer.observe(el, { attributes: true, attributeFilter: ['checked', 'value'] }));
-    }
-
     attachInteractionListeners();
-    observeFormElements();
 
     // Fungsi global untuk pemicu manual (bisa dipanggil dari ekstensi via execute_js)
     window.triggerSpotlight = (selector) => {
