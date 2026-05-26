@@ -36,8 +36,10 @@
         .table-wrapper { padding: 0 16px 28px 16px; }
         .table-container { overflow-x: auto; border-radius: 24px; border: 1px solid #edf2f7; background: #ffffff; }
         .data-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; min-width: 680px; }
-        .data-table th { background: #f8fafd; padding: 12px 8px; text-align: left; font-weight: 600; border-bottom: 1px solid #e2edf2; }
-        .data-table td { padding: 12px 8px; border-bottom: 1px solid #f0f4f9; }
+        /* Compact no-wrap table */
+        .data-table th, .data-table td { white-space: nowrap; padding: 8px 10px; }
+        .data-table th { background: #f8fafd; text-align: left; font-weight: 600; border-bottom: 1px solid #e2edf2; }
+        .data-table td { border-bottom: 1px solid #f0f4f9; }
         .hapus-btn { background: none; border: none; color: #ef4444; font-size: 0.7rem; cursor: pointer; padding: 5px 10px; border-radius: 40px; background: #fff2f0; }
         .empty-row td { text-align: center; padding: 32px 8px; color: #8a99b4; font-style: italic; }
         .toast-msg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172ae6; backdrop-filter: blur(8px); color: white; padding: 8px 20px; border-radius: 60px; font-size: 0.75rem; z-index: 10000; pointer-events: none; opacity: 0; transition: opacity 0.2s; white-space: nowrap; }
@@ -64,7 +66,7 @@
             </form>
         </div>
         <div class="button-group"><button id="simpanBtn" class="btn btn-primary">💾 Simpan Data</button><button id="resetBtn" class="btn btn-secondary">🔄 Reset Form</button></div>
-        <div class="table-wrapper"><div class="table-container"><table class="data-table" id="dataTable"><thead><tr><th>#</th><th>Nama</th><th>Email</th><th>Usia</th><th>JK</th><th>Hobi</th><th>Kota</th><th>Komentar</th><th>Tgl</th><th>Aksi</th></tr></thead><tbody id="tableBody"><tr class="empty-row"><td colspan="10">✨ Belum ada data, isi formulir dan klik Simpan</td></tr></tbody></table></div></div>
+        <div class="table-wrapper"><div class="table-container"><table class="data-table" id="dataTable"><thead><tr><th>#</th><th>Nama</th><th>Email</th><th>Usia</th><th>JK</th><th>Hobi</th><th>Kota</th><th>Komentar</th><th>Tgl</th><th>Aksi</th></tr></thead><tbody id="tableBody"><tr class="empty-row"><td colspan="10">✨ Belum ada data, isi formulir dan klik Simpan</td></tr></tbody>}</div></div>
     </div>
 </div>
 <div id="toastMsg" class="toast-msg"></div>
@@ -211,7 +213,7 @@
         if (!dataEntries.length) { tableBody.innerHTML = `<tr class="empty-row"><td colspan="10">✨ Belum ada data, isi formulir dan klik Simpan</td></tr>`; return; }
         let html = '';
         dataEntries.forEach((item, idx) => {
-            html += `<tr data-row-idx="${idx}"><tr>${idx+1}</td><td>${escapeHtml(item.nama)}</td><td>${escapeHtml(item.email)}</td><td>${item.usia}</td><td>${escapeHtml(item.gender)}</td><td>${escapeHtml(item.hobi)}</td><td>${escapeHtml(item.kota)}</td><td>${escapeHtml(item.komentar)}</td><td>${escapeHtml(item.tanggal)}</td><td><button class="hapus-btn" data-index="${idx}">🗑 Hapus</button></td></tr>`;
+            html += `<tr data-row-idx="${idx}"><td>${idx+1}</td><td>${escapeHtml(item.nama)}</td><td>${escapeHtml(item.email)}</td><td>${item.usia}</td><td>${escapeHtml(item.gender)}</td><td>${escapeHtml(item.hobi)}</td><td>${escapeHtml(item.kota)}</td><td>${escapeHtml(item.komentar)}</td><td>${escapeHtml(item.tanggal)}</td><td><button class="hapus-btn" data-index="${idx}">🗑 Hapus</button></td></tr>`;
         });
         tableBody.innerHTML = html;
         if (highlightLast && dataEntries.length) {
@@ -241,6 +243,7 @@
     }
 
     function resetForm() {
+        // Reset semua field form seperti semula
         namaInput.value = '';
         emailInput.value = '';
         usiaInput.value = '';
@@ -250,6 +253,13 @@
         hobiCheckboxes.forEach(cb => cb.checked = false);
         kotaSelect.selectedIndex = 0;
         showToast("🔄 Form telah direset");
+    }
+
+    // Tombol reset sekarang bereaksi seperti tombol simpan (highlight, hide spotlight, dan reset)
+    function handleReset() {
+        hideSpotlight();
+        highlightButton(resetBtn);
+        resetForm();
     }
 
     function setupTableDelegation() {
@@ -267,7 +277,7 @@
     }
 
     simpanBtn.addEventListener('click', (e) => { e.preventDefault(); handleSave(); });
-    resetBtn.addEventListener('click', (e) => { e.preventDefault(); resetForm(); });
+    resetBtn.addEventListener('click', (e) => { e.preventDefault(); handleReset(); });
     document.getElementById('mainForm').addEventListener('keypress', (e) => { if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') { e.preventDefault(); handleSave(); } });
     setupTableDelegation();
 
