@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Bank Customer Lookup</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+body{
+    background:#f5f7fb;
+    font-family:'Segoe UI',sans-serif;
+}
+
+.topbar{
+    background:linear-gradient(135deg,#0d47a1,#1565c0);
+    color:white;
+    padding:20px 30px;
+    box-shadow:0 3px 15px rgba(0,0,0,.15);
+}
+
+.logo-circle{
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    background:white;
+    color:#1565c0;
+    font-weight:bold;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+}
+
+.card{
+    border:none;
+    border-radius:16px;
+    box-shadow:0 5px 25px rgba(0,0,0,.08);
+}
+
+.search-box{
+    border-radius:12px;
+    padding:14px;
+}
+
+.table{
+    vertical-align:middle;
+}
+
+.table thead{
+    background:#0d47a1;
+    color:white;
+}
+
+.pagination .page-link{
+    color:#1565c0;
+}
+
+.pagination .active .page-link{
+    background:#1565c0;
+    border-color:#1565c0;
+}
+
+.stat-card{
+    background:white;
+    border-radius:15px;
+    padding:20px;
+    text-align:center;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.account-number{
+    font-weight:600;
+    color:#1565c0;
+    letter-spacing:1px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+
+    <div class="d-flex align-items-center gap-3">
+        <div class="logo-circle">B</div>
+
+        <div>
+            <h3 class="mb-0">Bank Digital Indonesia</h3>
+            <small>Customer Account Directory</small>
+        </div>
+    </div>
+
+</div>
+
+<div class="container mt-4">
+
+    <div class="row mb-4">
+
+        <div class="col-md-3">
+            <div class="stat-card">
+                <h2 id="totalData">100</h2>
+                <div>Total Rekening</div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <div class="row align-items-center">
+
+                        <div class="col-md-12">
+
+                            <label class="form-label fw-bold">
+                                Cari Nomor Rekening / Nama Nasabah
+                            </label>
+
+                            <input
+                                type="text"
+                                id="search"
+                                class="form-control search-box"
+                                placeholder="Contoh : 1000000001 atau Budi"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Daftar Nasabah Bank</h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover">
+
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nomor Rekening</th>
+                            <th>Nama Nasabah</th>
+                            <th>Bank</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tableBody"></tbody>
+
+                </table>
+
+            </div>
+
+            <nav>
+                <ul class="pagination justify-content-end mt-3" id="pagination"></ul>
+            </nav>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const banks = [
+'BCA',
+'BRI',
+'BNI',
+'Mandiri',
+'CIMB Niaga'
+];
+
+const names = [
+'Budi Santoso',
+'Andi Wijaya',
+'Siti Rahma',
+'Rina Putri',
+'Agus Setiawan',
+'Dewi Lestari',
+'Rudi Hartono',
+'Fajar Nugroho',
+'Ayu Maharani',
+'Yoga Pratama'
+];
+
+let customers = [];
+
+for(let i=1;i<=100;i++){
+
+    customers.push({
+        rekening:'1000'+String(i).padStart(6,'0'),
+        nama:names[i%10]+' '+i,
+        bank:banks[i%5],
+        status:'Aktif'
+    });
+
+}
+
+let filteredData=[...customers];
+
+const rowsPerPage=20;
+let currentPage=1;
+
+function bankBadge(bank){
+
+    const colors={
+        'BCA':'primary',
+        'BRI':'success',
+        'BNI':'warning',
+        'Mandiri':'info',
+        'CIMB Niaga':'secondary'
+    };
+
+    return `<span class="badge bg-${colors[bank]}">${bank}</span>`;
+}
+
+function renderTable(){
+
+    let start=(currentPage-1)*rowsPerPage;
+    let end=start+rowsPerPage;
+
+    let pageData=filteredData.slice(start,end);
+
+    let html='';
+
+    pageData.forEach((item,index)=>{
+
+        html+=`
+        <tr>
+            <td>${start+index+1}</td>
+            <td class="account-number">${item.rekening}</td>
+            <td>${item.nama}</td>
+            <td>${bankBadge(item.bank)}</td>
+            <td>
+                <span class="badge bg-success">
+                    ${item.status}
+                </span>
+            </td>
+        </tr>
+        `;
+    });
+
+    document.getElementById('tableBody').innerHTML=html;
+
+    renderPagination();
+}
+
+function renderPagination(){
+
+    let totalPages=Math.ceil(filteredData.length/rowsPerPage);
+
+    let html='';
+
+    for(let i=1;i<=totalPages;i++){
+
+        html+=`
+        <li class="page-item ${i===currentPage?'active':''}">
+            <a class="page-link"
+               href="#"
+               onclick="gotoPage(${i})">
+               ${i}
+            </a>
+        </li>
+        `;
+    }
+
+    document.getElementById('pagination').innerHTML=html;
+}
+
+function gotoPage(page){
+
+    currentPage=page;
+    renderTable();
+}
+
+document
+.getElementById('search')
+.addEventListener('keyup',function(){
+
+    let keyword=this.value.toLowerCase();
+
+    filteredData=customers.filter(x=>
+
+        x.rekening.toLowerCase().includes(keyword) ||
+        x.nama.toLowerCase().includes(keyword)
+
+    );
+
+    currentPage=1;
+
+    renderTable();
+
+});
+
+renderTable();
+
+</script>
+
+</body>
+</html>
