@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Sistem Raport Siswa SD</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body{
+    background:#f4f7fb;
+}
+
+.school-header{
+    background:linear-gradient(135deg,#0d6efd,#0a58ca);
+    color:white;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,.15);
+}
+
+.card{
+    border:none;
+    border-radius:15px;
+    box-shadow:0 3px 10px rgba(0,0,0,.1);
+}
+
+.table thead{
+    background:#0d6efd;
+    color:white;
+}
+
+.avg-badge{
+    font-size:14px;
+}
+
+.footer-text{
+    color:#6c757d;
+    font-size:13px;
+}
+</style>
+</head>
+<body>
+
+<div class="container py-4">
+
+    <div class="school-header mb-4 text-center">
+        <h2>SD Negeri Harapan Bangsa</h2>
+        <p class="mb-0">Sistem Input Nilai Raport Siswa</p>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Form Input Nilai Siswa</h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <label class="form-label">NIS</label>
+                    <input type="text" id="nis" class="form-control">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Nama Siswa</label>
+                    <input type="text" id="nama" class="form-control">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Matematika</label>
+                    <input type="number" min="10" max="100" id="mtk" class="form-control">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Bahasa Indonesia</label>
+                    <input type="number" min="10" max="100" id="indo" class="form-control">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">IPA</label>
+                    <input type="number" min="10" max="100" id="ipa" class="form-control">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">IPS</label>
+                    <input type="number" min="10" max="100" id="ips" class="form-control">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Bahasa Inggris</label>
+                    <input type="number" min="10" max="100" id="inggris" class="form-control">
+                </div>
+
+                <div class="col-12">
+                    <button class="btn btn-primary" onclick="simpanData()">
+                        Simpan Nilai
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card">
+
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Data Raport Siswa</h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>NIS</th>
+                            <th>Nama</th>
+                            <th>MTK</th>
+                            <th>INDO</th>
+                            <th>IPA</th>
+                            <th>IPS</th>
+                            <th>INGGRIS</th>
+                            <th>Rata-rata</th>
+                            <th>Predikat</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tabelSiswa"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="text-center mt-3 footer-text">
+        © 2025 SD Negeri Harapan Bangsa
+    </div>
+
+</div>
+
+<script>
+
+let dataSiswa = [
+{
+nis:'1001',
+nama:'Andi Saputra',
+mtk:90,
+indo:88,
+ipa:85,
+ips:87,
+inggris:89
+},
+{
+nis:'1002',
+nama:'Budi Santoso',
+mtk:78,
+indo:80,
+ipa:82,
+ips:79,
+inggris:81
+},
+{
+nis:'1003',
+nama:'Citra Lestari',
+mtk:95,
+indo:92,
+ipa:94,
+ips:93,
+inggris:96
+},
+{
+nis:'1004',
+nama:'Dewi Anggraini',
+mtk:85,
+indo:86,
+ipa:84,
+ips:88,
+inggris:87
+},
+{
+nis:'1005',
+nama:'Eko Prasetyo',
+mtk:72,
+indo:75,
+ipa:74,
+ips:73,
+inggris:76
+}
+];
+
+function getPredikat(rata){
+    if(rata >= 90) return "A";
+    if(rata >= 80) return "B";
+    if(rata >= 70) return "C";
+    return "D";
+}
+
+function renderTable(){
+
+    let html='';
+
+    dataSiswa.forEach(item=>{
+
+        let rata = (
+            item.mtk +
+            item.indo +
+            item.ipa +
+            item.ips +
+            item.inggris
+        ) / 5;
+
+        html += `
+        <tr>
+            <td>${item.nis}</td>
+            <td>${item.nama}</td>
+            <td>${item.mtk}</td>
+            <td>${item.indo}</td>
+            <td>${item.ipa}</td>
+            <td>${item.ips}</td>
+            <td>${item.inggris}</td>
+            <td>
+                <span class="badge bg-success avg-badge">
+                    ${rata.toFixed(2)}
+                </span>
+            </td>
+            <td>
+                <span class="badge bg-primary">
+                    ${getPredikat(rata)}
+                </span>
+            </td>
+        </tr>
+        `;
+    });
+
+    document.getElementById('tabelSiswa').innerHTML = html;
+}
+
+function simpanData(){
+
+    let nis = document.getElementById('nis').value;
+    let nama = document.getElementById('nama').value;
+
+    let mtk = Number(document.getElementById('mtk').value);
+    let indo = Number(document.getElementById('indo').value);
+    let ipa = Number(document.getElementById('ipa').value);
+    let ips = Number(document.getElementById('ips').value);
+    let inggris = Number(document.getElementById('inggris').value);
+
+    if(!nis || !nama){
+        alert('NIS dan Nama wajib diisi');
+        return;
+    }
+
+    const nilai = [mtk,indo,ipa,ips,inggris];
+
+    const valid = nilai.every(n => n >= 10 && n <= 100);
+
+    if(!valid){
+        alert('Semua nilai harus antara 10 - 100');
+        return;
+    }
+
+    dataSiswa.push({
+        nis,
+        nama,
+        mtk,
+        indo,
+        ipa,
+        ips,
+        inggris
+    });
+
+    renderTable();
+
+    document.getElementById('nis').value='';
+    document.getElementById('nama').value='';
+    document.getElementById('mtk').value='';
+    document.getElementById('indo').value='';
+    document.getElementById('ipa').value='';
+    document.getElementById('ips').value='';
+    document.getElementById('inggris').value='';
+
+    alert('Data berhasil disimpan');
+}
+
+renderTable();
+
+</script>
+
+</body>
+</html>
