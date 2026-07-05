@@ -5,11 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tooth Piano 🦷</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
       min-height: 100vh;
@@ -34,13 +30,45 @@
       color: #fff;
       font-weight: 300;
       letter-spacing: 2px;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       font-size: 2rem;
       text-shadow: 0 2px 10px rgba(233,69,96,0.3);
     }
-    h1 span {
-      color: #e94560;
+    h1 span { color: #e94560; }
+
+    /* Audio status & unlock button */
+    .audio-control {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
     }
+    #unlockBtn {
+      background: #e94560;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(233,69,96,0.4);
+      transition: all 0.2s;
+    }
+    #unlockBtn:hover { transform: scale(1.04); background: #ff6b8b; }
+    #unlockBtn:disabled { opacity: 0.4; cursor: default; transform: none; }
+    #statusBadge {
+      padding: 6px 16px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: #2c3e66;
+      color: #8aa4c9;
+    }
+    #statusBadge.active { background: #2ecc71; color: #fff; }
+
     .piano {
       display: flex;
       justify-content: center;
@@ -79,16 +107,8 @@
       border-radius: 0 0 12px 12px;
       box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
     }
-    .tooth:hover {
-      background: #ffffff;
-      transform: translateY(-2px);
-      box-shadow: 0 10px 0 #b0b0b0, 0 14px 30px rgba(0,0,0,0.4);
-    }
-    .tooth:active, .tooth.active {
-      transform: translateY(6px);
-      box-shadow: 0 2px 0 #b0b0b0, 0 8px 20px rgba(0,0,0,0.3);
-    }
-    /* Warna gigi sesuai nada */
+    .tooth:hover { background: #ffffff; transform: translateY(-2px); box-shadow: 0 10px 0 #b0b0b0, 0 14px 30px rgba(0,0,0,0.4); }
+    .tooth:active, .tooth.active { transform: translateY(6px); box-shadow: 0 2px 0 #b0b0b0, 0 8px 20px rgba(0,0,0,0.3); }
     .tooth-do { background: #ffb3b3; border-color: #ff8a8a; }
     .tooth-re { background: #ffd9b3; border-color: #ffc08a; }
     .tooth-mi { background: #ffffb3; border-color: #ffff8a; }
@@ -97,19 +117,10 @@
     .tooth-la { background: #d9b3ff; border-color: #c08aff; }
     .tooth-si { background: #ffb3f0; border-color: #ff8ae0; }
     .tooth-do2 { background: #ffb3b3; border-color: #ff8a8a; }
-    .tooth .label {
-      font-size: 1.4rem;
-      line-height: 1.2;
-    }
-    .tooth .sub {
-      font-size: 0.6rem;
-      font-weight: 400;
-      color: #555;
-      margin-top: 2px;
-    }
+    .tooth .label { font-size: 1.4rem; line-height: 1.2; }
+    .tooth .sub { font-size: 0.6rem; font-weight: 400; color: #555; margin-top: 2px; }
     .tooth-do2 .sub { color: #8a3a3a; }
 
-    /* Informasi */
     .info {
       margin-top: 30px;
       color: #ccc;
@@ -118,13 +129,7 @@
       border-top: 1px solid rgba(255,255,255,0.08);
       padding-top: 20px;
     }
-    .info code {
-      background: rgba(255,255,255,0.1);
-      padding: 2px 10px;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      color: #e94560;
-    }
+    .info code { background: rgba(255,255,255,0.1); padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; color: #e94560; }
 
     @media (max-width: 600px) {
       .tooth { width: 50px; height: 75px; font-size: 0.9rem; }
@@ -136,8 +141,14 @@
 <body>
 <div class="container">
   <h1>🦷 Tooth <span>Piano</span></h1>
+
+  <!-- Audio Unlock -->
+  <div class="audio-control">
+    <button id="unlockBtn">🔊 Aktifkan Suara</button>
+    <span id="statusBadge">⏸️ Tertahan</span>
+  </div>
+
   <div class="piano" id="piano">
-    <!-- 8 tuts: Do Re Mi Fa Sol La Si Do' -->
     <div class="tooth tooth-do" data-note="C4" id="key-do"><span class="label">Do</span><span class="sub">C4</span></div>
     <div class="tooth tooth-re" data-note="D4" id="key-re"><span class="label">Re</span><span class="sub">D4</span></div>
     <div class="tooth tooth-mi" data-note="E4" id="key-mi"><span class="label">Mi</span><span class="sub">E4</span></div>
@@ -153,64 +164,105 @@
 </div>
 <script>
   (function() {
-    // Audio Context
     let audioCtx = null;
+    let isUnlocked = false;
 
-    function getAudioCtx() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const unlockBtn = document.getElementById('unlockBtn');
+    const statusBadge = document.getElementById('statusBadge');
+
+    function updateUI() {
+      if (isUnlocked && audioCtx && audioCtx.state === 'running') {
+        statusBadge.textContent = '🔊 Aktif';
+        statusBadge.className = 'active';
+        unlockBtn.disabled = true;
+        unlockBtn.textContent = '✅ Suara Aktif';
+      } else {
+        statusBadge.textContent = '⏸️ Tertahan';
+        statusBadge.className = '';
+        unlockBtn.disabled = false;
+        unlockBtn.textContent = '🔊 Aktifkan Suara';
       }
-      return audioCtx;
     }
 
-    // Frekuensi nada (do re mi fa sol la si do')
-    const FREQ = {
-      'C4': 261.63,
-      'D4': 293.66,
-      'E4': 329.63,
-      'F4': 349.23,
-      'G4': 392.00,
-      'A4': 440.00,
-      'B4': 493.88,
-      'C5': 523.25
-    };
-
-    // Play note
-    function playNote(noteName, duration = 0.3) {
-      const freq = FREQ[noteName];
-      if (!freq) return;
+    function unlockAudio() {
       try {
-        const ctx = getAudioCtx();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.3, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + duration);
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        // Tandai sebagai unlocked
+        isUnlocked = true;
+        updateUI();
+        console.log('✅ AudioContext unlocked!');
       } catch(e) {
-        console.warn('Audio error:', e);
+        console.warn('Gagal unlock audio:', e);
       }
     }
 
-    // Tambahkan event listener ke setiap tuts
-    const keys = document.querySelectorAll('.tooth');
-    keys.forEach(key => {
+    // Tombol unlock
+    unlockBtn.addEventListener('click', unlockAudio);
+
+    // Juga unlock saat pengguna mengklik gigi secara MANUAL (pertama kali)
+    // Ini sebagai fallback agar pengalaman pengguna lebih mulus
+    document.querySelectorAll('.tooth').forEach(key => {
       key.addEventListener('click', function(e) {
+        // Jika belum unlock, unlock dulu
+        if (!isUnlocked || (audioCtx && audioCtx.state === 'suspended')) {
+          unlockAudio();
+        }
+        // Mainkan nada (dijalankan setelah unlock atau jika sudah unlock)
         const note = this.dataset.note;
-        playNote(note);
-        // Efek visual aktif
+        if (isUnlocked && audioCtx && audioCtx.state === 'running') {
+          playNote(note);
+        }
+        // Efek visual
         this.classList.add('active');
         setTimeout(() => this.classList.remove('active'), 150);
       });
     });
 
-    // Dukung klik dari Ghost Hands (tidak perlu tambahan, event click sudah terpasang)
+    // Fungsi play note (hanya dipanggil jika audio aktif)
+    function playNote(noteName, duration = 0.3) {
+      const FREQ = {
+        'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'F4': 349.23,
+        'G4': 392.00, 'A4': 440.00, 'B4': 493.88, 'C5': 523.25
+      };
+      const freq = FREQ[noteName];
+      if (!freq || !audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + duration);
+      } catch(e) {
+        console.warn('Audio play error:', e);
+      }
+    }
 
-    console.log('🦷 Tooth Piano siap!');
+    // Cek status audio secara periodik
+    setInterval(() => {
+      if (audioCtx && audioCtx.state === 'running' && !isUnlocked) {
+        isUnlocked = true;
+        updateUI();
+      }
+      if (audioCtx && audioCtx.state === 'suspended' && isUnlocked) {
+        // Jika tiba-tiba suspended, coba resume (biasanya tidak terjadi)
+        audioCtx.resume();
+      }
+      updateUI();
+    }, 500);
+
+    // Inisialisasi
+    updateUI();
+    console.log('🦷 Tooth Piano siap. Klik "Aktifkan Suara" atau gigi untuk mulai!');
   })();
 </script>
 </body>
