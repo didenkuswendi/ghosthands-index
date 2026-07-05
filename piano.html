@@ -22,28 +22,19 @@
       padding: 40px 30px 30px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.6);
       border: 1px solid rgba(255,255,255,0.1);
-      max-width: 800px;
+      max-width: 840px;
       width: 100%;
     }
-    h1 {
-      text-align: center;
-      color: #fff;
-      font-weight: 300;
-      letter-spacing: 2px;
-      margin-bottom: 20px;
-      font-size: 2rem;
-      text-shadow: 0 2px 10px rgba(233,69,96,0.3);
-    }
+    h1 { text-align: center; color: #fff; font-weight: 300; letter-spacing: 2px; margin-bottom: 16px; font-size: 2rem; text-shadow: 0 2px 10px rgba(233,69,96,0.3); }
     h1 span { color: #e94560; }
 
-    /* Audio status & unlock button */
-    .audio-control {
+    .controls {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 16px;
-      margin-bottom: 24px;
       flex-wrap: wrap;
+      margin-bottom: 24px;
     }
     #unlockBtn {
       background: #e94560;
@@ -68,6 +59,28 @@
       color: #8aa4c9;
     }
     #statusBadge.active { background: #2ecc71; color: #fff; }
+
+    .instrument-select {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.05);
+      padding: 4px 12px 4px 16px;
+      border-radius: 40px;
+      border: 1px solid #2c3e66;
+    }
+    .instrument-select label { color: #b0c4de; font-size: 0.85rem; font-weight: 500; }
+    .instrument-select select {
+      background: #1e2a47;
+      color: #e0e0e0;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      outline: none;
+    }
+    .instrument-select select:focus { border: 1px solid #e94560; }
 
     .piano {
       display: flex;
@@ -135,6 +148,8 @@
       .tooth { width: 50px; height: 75px; font-size: 0.9rem; }
       .tooth .label { font-size: 1rem; }
       .container { padding: 20px 12px; }
+      .controls { flex-direction: column; align-items: stretch; }
+      .instrument-select { justify-content: center; }
     }
   </style>
 </head>
@@ -142,10 +157,25 @@
 <div class="container">
   <h1>🦷 Tooth <span>Piano</span></h1>
 
-  <!-- Audio Unlock -->
-  <div class="audio-control">
+  <!-- Kontrol -->
+  <div class="controls">
     <button id="unlockBtn">🔊 Aktifkan Suara</button>
     <span id="statusBadge">⏸️ Tertahan</span>
+    <div class="instrument-select">
+      <label for="instrument">🎵 Instrumen</label>
+      <select id="instrument">
+        <option value="piano">Piano</option>
+        <option value="flute">Suling</option>
+        <option value="organ">Organ</option>
+        <option value="synth">Synth</option>
+        <option value="angklung">Angklung</option>
+        <option value="violin">Biola</option>
+        <option value="guitar">Gitar</option>
+        <option value="xylophone">Xylophone</option>
+        <option value="musicbox">Music Box</option>
+        <option value="trumpet">Trumpet</option>
+      </select>
+    </div>
   </div>
 
   <div class="piano" id="piano">
@@ -159,7 +189,7 @@
     <div class="tooth tooth-do2" data-note="C5" id="key-do2"><span class="label">Do'</span><span class="sub">C5</span></div>
   </div>
   <div class="info">
-    🖱️ Klik gigi untuk mendengar nada &nbsp;|&nbsp; 🎯 Gunakan Ghost Hands dengan selector <code>#key-*</code>
+    🖱️ Klik gigi untuk mendengar nada &nbsp;|&nbsp; 🎯 Ghost Hands selector <code>#key-*</code>
   </div>
 </div>
 <script>
@@ -169,6 +199,147 @@
 
     const unlockBtn = document.getElementById('unlockBtn');
     const statusBadge = document.getElementById('statusBadge');
+    const instrumentSelect = document.getElementById('instrument');
+
+    // Peta frekuensi
+    const FREQ = {
+      'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'F4': 349.23,
+      'G4': 392.00, 'A4': 440.00, 'B4': 493.88, 'C5': 523.25
+    };
+
+    // Konfigurasi instrumen
+    const INSTRUMENTS = {
+      piano: {
+        type: 'sine',
+        gain: 0.35,
+        attack: 0.005,
+        decay: 0.3,
+        sustain: 0.2,
+        release: 0.4,
+        filterFreq: null,
+        vibrato: false,
+        tremolo: false
+      },
+      flute: {
+        type: 'sine',
+        gain: 0.25,
+        attack: 0.05,
+        decay: 0.4,
+        sustain: 0.3,
+        release: 0.5,
+        filterFreq: 1800,
+        vibrato: true,
+        tremolo: false
+      },
+      organ: {
+        type: 'square',
+        gain: 0.2,
+        attack: 0.02,
+        decay: 0.5,
+        sustain: 0.4,
+        release: 0.6,
+        filterFreq: 1200,
+        vibrato: false,
+        tremolo: false
+      },
+      synth: {
+        type: 'sawtooth',
+        gain: 0.25,
+        attack: 0.01,
+        decay: 0.3,
+        sustain: 0.2,
+        release: 0.5,
+        filterFreq: 800,
+        vibrato: false,
+        tremolo: false
+      },
+      angklung: {
+        type: 'sine',
+        gain: 0.3,
+        attack: 0.001,
+        decay: 0.8,
+        sustain: 0.1,
+        release: 0.4,
+        filterFreq: 2000,
+        vibrato: false,
+        tremolo: { frequency: 12, depth: 15 }
+      },
+      violin: {
+        type: 'sawtooth',
+        gain: 0.2,
+        attack: 0.1,
+        decay: 0.4,
+        sustain: 0.3,
+        release: 0.6,
+        filterFreq: 1000,
+        vibrato: { frequency: 6, depth: 5 },
+        tremolo: false
+      },
+      guitar: {
+        type: 'sawtooth',
+        gain: 0.25,
+        attack: 0.002,
+        decay: 0.5,
+        sustain: 0.15,
+        release: 0.5,
+        filterFreq: 1500,
+        vibrato: false,
+        tremolo: false
+      },
+      xylophone: {
+        type: 'sine',
+        gain: 0.3,
+        attack: 0.001,
+        decay: 0.15,
+        sustain: 0.05,
+        release: 0.1,
+        filterFreq: 3000,
+        vibrato: false,
+        tremolo: false
+      },
+      musicbox: {
+        type: 'sine',
+        gain: 0.25,
+        attack: 0.02,
+        decay: 0.4,
+        sustain: 0.2,
+        release: 0.6,
+        filterFreq: 2500,
+        vibrato: { frequency: 2, depth: 3 },
+        tremolo: false
+      },
+      trumpet: {
+        type: 'square',
+        gain: 0.2,
+        attack: 0.01,
+        decay: 0.3,
+        sustain: 0.3,
+        release: 0.4,
+        filterFreq: 600,
+        vibrato: { frequency: 5, depth: 4 },
+        tremolo: false
+      }
+    };
+
+    function getInstrumentConfig(name) {
+      return INSTRUMENTS[name] || INSTRUMENTS.piano;
+    }
+
+    function unlockAudio() {
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        isUnlocked = true;
+        updateUI();
+        console.log('✅ Audio unlocked');
+      } catch(e) {
+        console.warn('Unlock error:', e);
+      }
+    }
 
     function updateUI() {
       if (isUnlocked && audioCtx && audioCtx.state === 'running') {
@@ -184,85 +355,130 @@
       }
     }
 
-    function unlockAudio() {
+    // Play nada dengan instrumen
+    function playNote(noteName, duration = 0.4) {
+      const freq = FREQ[noteName];
+      if (!freq || !audioCtx || !isUnlocked) return;
+
+      const instr = getInstrumentConfig(instrumentSelect.value);
+      const now = audioCtx.currentTime;
+
       try {
-        if (!audioCtx) {
-          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        // Oscillator
+        const osc = audioCtx.createOscillator();
+        osc.type = instr.type;
+        osc.frequency.value = freq;
+
+        // Gain (envelope)
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(instr.gain, now + instr.attack);
+        gain.gain.setValueAtTime(instr.gain, now + instr.attack + 0.05);
+        gain.gain.exponentialRampToValueAtTime(instr.gain * instr.sustain, now + instr.attack + instr.decay);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration + instr.release);
+
+        // Filter (opsional)
+        let filter = null;
+        if (instr.filterFreq) {
+          filter = audioCtx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.value = instr.filterFreq;
+          osc.connect(filter);
+          filter.connect(gain);
+        } else {
+          osc.connect(gain);
         }
-        if (audioCtx.state === 'suspended') {
-          audioCtx.resume();
+
+        // Vibrato
+        let vibratoOsc = null, vibratoGain = null;
+        if (instr.vibrato && typeof instr.vibrato === 'object') {
+          vibratoOsc = audioCtx.createOscillator();
+          vibratoGain = audioCtx.createGain();
+          vibratoOsc.frequency.value = instr.vibrato.frequency;
+          vibratoGain.gain.value = instr.vibrato.depth;
+          vibratoOsc.connect(vibratoGain);
+          vibratoGain.connect(osc.frequency);
+          vibratoOsc.start(now);
+          vibratoOsc.stop(now + duration + 0.1);
+        } else if (instr.vibrato === true) {
+          vibratoOsc = audioCtx.createOscillator();
+          vibratoGain = audioCtx.createGain();
+          vibratoOsc.frequency.value = 5;
+          vibratoGain.gain.value = 4;
+          vibratoOsc.connect(vibratoGain);
+          vibratoGain.connect(osc.frequency);
+          vibratoOsc.start(now);
+          vibratoOsc.stop(now + duration + 0.1);
         }
-        // Tandai sebagai unlocked
-        isUnlocked = true;
-        updateUI();
-        console.log('✅ AudioContext unlocked!');
+
+        // Tremolo
+        let tremoloOsc = null, tremoloGain = null;
+        if (instr.tremolo && typeof instr.tremolo === 'object') {
+          tremoloOsc = audioCtx.createOscillator();
+          tremoloGain = audioCtx.createGain();
+          tremoloOsc.frequency.value = instr.tremolo.frequency;
+          tremoloGain.gain.value = instr.tremolo.depth * 0.01;
+          tremoloOsc.connect(tremoloGain);
+          tremoloGain.connect(gain.gain);
+          tremoloOsc.start(now);
+          tremoloOsc.stop(now + duration + 0.1);
+        } else if (instr.tremolo === true) {
+          tremoloOsc = audioCtx.createOscillator();
+          tremoloGain = audioCtx.createGain();
+          tremoloOsc.frequency.value = 10;
+          tremoloGain.gain.value = 0.2;
+          tremoloOsc.connect(tremoloGain);
+          tremoloGain.connect(gain.gain);
+          tremoloOsc.start(now);
+          tremoloOsc.stop(now + duration + 0.1);
+        }
+
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + duration + instr.release + 0.05);
+
+        // Efek visual
+        const key = document.querySelector(`.tooth[data-note="${noteName}"]`);
+        if (key) {
+          key.classList.add('active');
+          setTimeout(() => key.classList.remove('active'), 200);
+        }
+
       } catch(e) {
-        console.warn('Gagal unlock audio:', e);
+        console.warn('Play error:', e);
       }
     }
 
-    // Tombol unlock
+    // --- Event Listeners ---
     unlockBtn.addEventListener('click', unlockAudio);
 
-    // Juga unlock saat pengguna mengklik gigi secara MANUAL (pertama kali)
-    // Ini sebagai fallback agar pengalaman pengguna lebih mulus
     document.querySelectorAll('.tooth').forEach(key => {
       key.addEventListener('click', function(e) {
-        // Jika belum unlock, unlock dulu
         if (!isUnlocked || (audioCtx && audioCtx.state === 'suspended')) {
           unlockAudio();
         }
-        // Mainkan nada (dijalankan setelah unlock atau jika sudah unlock)
         const note = this.dataset.note;
         if (isUnlocked && audioCtx && audioCtx.state === 'running') {
           playNote(note);
         }
-        // Efek visual
-        this.classList.add('active');
-        setTimeout(() => this.classList.remove('active'), 150);
       });
     });
 
-    // Fungsi play note (hanya dipanggil jika audio aktif)
-    function playNote(noteName, duration = 0.3) {
-      const FREQ = {
-        'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'F4': 349.23,
-        'G4': 392.00, 'A4': 440.00, 'B4': 493.88, 'C5': 523.25
-      };
-      const freq = FREQ[noteName];
-      if (!freq || !audioCtx) return;
-      try {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(audioCtx.currentTime);
-        osc.stop(audioCtx.currentTime + duration);
-      } catch(e) {
-        console.warn('Audio play error:', e);
-      }
-    }
-
-    // Cek status audio secara periodik
+    // Cek status audio tiap 1 detik
     setInterval(() => {
       if (audioCtx && audioCtx.state === 'running' && !isUnlocked) {
         isUnlocked = true;
         updateUI();
       }
       if (audioCtx && audioCtx.state === 'suspended' && isUnlocked) {
-        // Jika tiba-tiba suspended, coba resume (biasanya tidak terjadi)
         audioCtx.resume();
       }
       updateUI();
-    }, 500);
+    }, 1000);
 
     // Inisialisasi
     updateUI();
-    console.log('🦷 Tooth Piano siap. Klik "Aktifkan Suara" atau gigi untuk mulai!');
+    console.log('🦷 Tooth Piano siap dengan 10 instrumen!');
   })();
 </script>
 </body>
