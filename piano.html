@@ -157,7 +157,6 @@
 <div class="container">
   <h1>🦷 Tooth <span>Piano</span></h1>
 
-  <!-- Kontrol -->
   <div class="controls">
     <button id="unlockBtn">🔊 Aktifkan Suara</button>
     <span id="statusBadge">⏸️ Tertahan</span>
@@ -193,27 +192,27 @@
   (function() {
     let audioCtx = null;
     let isUnlocked = false;
-    let activeOscillators = {}; // simpan referensi oscillator per note
+    let isHolding = false;
+    let preventClick = false; // 🔥 FLAG BARU
+    let activeOscillators = {};
 
     const unlockBtn = document.getElementById('unlockBtn');
     const statusBadge = document.getElementById('statusBadge');
     const instrumentSelect = document.getElementById('instrument');
 
-    // Frekuensi
     const FREQ = {
       'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'F4': 349.23,
       'G4': 392.00, 'A4': 440.00, 'B4': 493.88, 'C5': 523.25
     };
 
-    // Konfigurasi instrumen (dengan efek)
     const INSTRUMENTS = {
-      piano: { type: 'sine', gain: 0.35, attack: 0.005, decay: 0.3, sustain: 0.2, release: 0.4, filterFreq: null },
-      flute: { type: 'sine', gain: 0.25, attack: 0.05, decay: 0.4, sustain: 0.3, release: 0.5, filterFreq: 1800, vibrato: true },
+      piano: { type: 'sine', gain: 0.35, attack: 0.005, decay: 0.3, sustain: 0.2, release: 0.5, filterFreq: null },
+      flute: { type: 'sine', gain: 0.25, attack: 0.05, decay: 0.4, sustain: 0.3, release: 0.7, filterFreq: 1800, vibrato: true },
       organ: { type: 'square', gain: 0.2, attack: 0.02, decay: 0.5, sustain: 0.4, release: 0.6, filterFreq: 1200 },
-      synth: { type: 'sawtooth', gain: 0.25, attack: 0.01, decay: 0.3, sustain: 0.2, release: 0.5, filterFreq: 800 },
-      angklung: { type: 'triangle', gain: 0.3, attack: 0.02, decay: 0.6, sustain: 0.1, release: 0.3, filterFreq: 2500, vibrato: true },
-      violin: { type: 'sawtooth', gain: 0.2, attack: 0.1, decay: 0.2, sustain: 0.4, release: 0.6, filterFreq: 1000, vibrato: true },
-      guitar: { type: 'sine', gain: 0.3, attack: 0.01, decay: 0.5, sustain: 0.1, release: 0.3, filterFreq: 1200 }
+      synth: { type: 'sawtooth', gain: 0.25, attack: 0.01, decay: 0.3, sustain: 0.2, release: 0.6, filterFreq: 800 },
+      angklung: { type: 'triangle', gain: 0.3, attack: 0.02, decay: 0.6, sustain: 0.1, release: 0.5, filterFreq: 2500, vibrato: true },
+      violin: { type: 'sawtooth', gain: 0.2, attack: 0.1, decay: 0.2, sustain: 0.4, release: 0.8, filterFreq: 1000, vibrato: true },
+      guitar: { type: 'sine', gain: 0.3, attack: 0.01, decay: 0.5, sustain: 0.1, release: 0.5, filterFreq: 1200 }
     };
 
     function getInstrumentConfig(name) {
@@ -246,7 +245,7 @@
       }
     }
 
-    // === Fungsi play note (untuk klik pendek) ===
+    // Not pendek (click)
     function playNote(noteName, duration = 0.4) {
       const freq = FREQ[noteName];
       if (!freq || !audioCtx || !isUnlocked) return;
@@ -289,9 +288,8 @@
 
         gain.connect(audioCtx.destination);
         osc.start(now);
-        osc.stop(now + duration + instr.release + 0.05);
+        osc.stop(now + duration + instr.release + 0.1);
 
-        // Visual
         const key = document.querySelector(`.tooth[data-note="${noteName}"]`);
         if (key) {
           key.classList.add('active');
@@ -300,11 +298,11 @@
       } catch(e) { console.warn('Play error:', e); }
     }
 
-    // === Fungsi startNote (untuk mousedown / penekanan lama) ===
+    // Mulai not panjang (mousedown)
     function startNote(noteName) {
       const freq = FREQ[noteName];
       if (!freq || !audioCtx || !isUnlocked) return;
-      if (activeOscillators[noteName]) return; // sudah berbunyi
+      if (activeOscillators[noteName]) return;
 
       const instr = getInstrumentConfig(instrumentSelect.value);
       const now = audioCtx.currentTime;
@@ -344,17 +342,15 @@
         gain.connect(audioCtx.destination);
         osc.start(now);
 
-        // Simpan referensi
         activeOscillators[noteName] = { osc, gain, filter, instr };
 
-        // Visual
         const key = document.querySelector(`.tooth[data-note="${noteName}"]`);
         if (key) key.classList.add('active');
 
       } catch(e) { console.warn('Start note error:', e); }
     }
 
-    // === Fungsi stopNote (untuk mouseup / melepas penekanan) ===
+    // Hentikan not panjang (mouseup / mouseleave) – SMOOTH RELEASE
     function stopNote(noteName) {
       const active = activeOscillators[noteName];
       if (!active) return;
@@ -362,10 +358,13 @@
       try {
         const { osc, gain, instr } = active;
         const now = audioCtx.currentTime;
-        gain.gain.exponentialRampToValueAtTime(0.001, now + instr.release);
-        osc.stop(now + instr.release + 0.05);
+        const releaseTime = instr.release || 0.5;
 
-        // Visual
+        gain.gain.cancelScheduledValues(now);
+        gain.gain.setValueAtTime(gain.gain.value, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + releaseTime);
+        osc.stop(now + releaseTime + 0.1);
+
         const key = document.querySelector(`.tooth[data-note="${noteName}"]`);
         if (key) key.classList.remove('active');
 
@@ -373,35 +372,55 @@
       } catch(e) { console.warn('Stop note error:', e); }
     }
 
-    // === Event Listeners ===
+    // === EVENT LISTENERS ===
+
     unlockBtn.addEventListener('click', unlockAudio);
 
     document.querySelectorAll('.tooth').forEach(key => {
       const note = key.dataset.note;
 
-      // Klik pendek
-      key.addEventListener('click', function(e) {
-        if (!isUnlocked || (audioCtx && audioCtx.state === 'suspended')) unlockAudio();
-        if (isUnlocked && audioCtx && audioCtx.state === 'running') {
-          playNote(note);
-        }
-      });
-
-      // Mulai tekan (lama)
+      // Mouse down → mulai not panjang & aktifkan preventClick
       key.addEventListener('mousedown', function(e) {
         e.preventDefault();
+        isHolding = true;
+        preventClick = true; // 🔥 Cegah click yang akan datang
         if (!isUnlocked || (audioCtx && audioCtx.state === 'suspended')) unlockAudio();
         if (isUnlocked && audioCtx && audioCtx.state === 'running') {
           startNote(note);
         }
       });
 
-      // Lepas tekan
+      // Mouse up → hentikan not panjang, tapi jangan langsung reset preventClick
       key.addEventListener('mouseup', function(e) {
+        isHolding = false;
+        // Beri jeda 150ms sebelum mengizinkan click (agar click tidak terpicu)
+        setTimeout(() => {
+          preventClick = false;
+        }, 150);
         stopNote(note);
       });
+
+      // Mouse leave → hentikan jika masih menahan
       key.addEventListener('mouseleave', function(e) {
-        stopNote(note);
+        if (isHolding) {
+          isHolding = false;
+          preventClick = false;
+          stopNote(note);
+        }
+      });
+
+      // Click → hanya jika tidak sedang menahan dan preventClick false
+      key.addEventListener('click', function(e) {
+        if (preventClick) {
+          // Reset flag agar tidak mengganggu click berikutnya
+          preventClick = false;
+          return;
+        }
+        if (isHolding) return;
+        if (!isUnlocked || (audioCtx && audioCtx.state === 'suspended')) unlockAudio();
+        if (isUnlocked && audioCtx && audioCtx.state === 'running') {
+          playNote(note);
+        }
       });
     });
 
@@ -418,7 +437,7 @@
     }, 1000);
 
     updateUI();
-    console.log('🦷 Tooth Piano with hold & release!');
+    console.log('🦷 Tooth Piano dengan release halus & preventClick!');
   })();
 </script>
 </body>
