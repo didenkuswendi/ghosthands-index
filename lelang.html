@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulasi Lelang Profesional</title>
+  <!-- Google Font: Inter untuk tampilan modern -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* ===== RESET & BASE ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 24px 32px;
+      line-height: 1.5;
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3b82f6;
+      border-radius: 8px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #60a5fa;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid #1e293b;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo i {
+      font-size: 28px;
+      color: #3b82f6;
+    }
+
+    .logo h1 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #60a5fa, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .nav a {
+      color: #94a3b8;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav a:hover {
+      color: #e2e8f0;
+    }
+
+    .nav a.active {
+      color: #3b82f6;
+    }
+
+    .user-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #1e293b;
+      padding: 6px 16px 6px 12px;
+      border-radius: 40px;
+      border: 1px solid #334155;
+    }
+
+    .user-badge img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #3b82f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .user-badge span {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    /* ===== HERO BANNER ===== */
+    .hero {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 1px solid #2d3748;
+      border-radius: 24px;
+      padding: 32px 40px;
+      margin-bottom: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 24px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-content h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .hero-content h2 span {
+      color: #3b82f6;
+    }
+
+    .hero-content p {
+      color: #94a3b8;
+      font-size: 15px;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 32px;
+    }
+
+    .hero-stats .stat {
+      text-align: center;
+    }
+
+    .hero-stats .stat .number {
+      font-size: 24px;
+      font-weight: 700;
+      color: #3b82f6;
+    }
+
+    .hero-stats .stat .label {
+      font-size: 12px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ===== FILTER / SEARCH ===== */
+    .filter-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-bar input[type="text"] {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px 16px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 40px;
+      color: #e2e8f0;
+      font-size: 14px;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .filter-bar input[type="text"]:focus {
+      border-color: #3b82f6;
+    }
+
+    .filter-bar .filter-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .filter-bar .filter-btn {
+      padding: 8px 20px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 40px;
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-bar .filter-btn:hover {
+      background: #2d3748;
+      color: #e2e8f0;
+    }
+
+    .filter-bar .filter-btn.active {
+      background: #3b82f6;
+      border-color: #3b82f6;
+      color: #fff;
+    }
+
+    /* ===== GRID ITEM LELANG ===== */
+    .auction-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .auction-card {
+      background: #1e293b;
+      border: 1px solid #2d3748;
+      border-radius: 20px;
+      overflow: hidden;
+      transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .auction-card:hover {
+      transform: translateY(-6px);
+      border-color: #3b82f6;
+      box-shadow: 0 12px 32px rgba(59, 130, 246, 0.15);
+    }
+
+    .auction-card .image {
+      height: 180px;
+      background: #2d3748;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      color: #4a5a7a;
+      position: relative;
+    }
+
+    .auction-card .image .badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: #3b82f6;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 40px;
+    }
+
+    .auction-card .image .time-left {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #facc15;
+    }
+
+    .auction-card .image .time-left i {
+      font-size: 12px;
+    }
+
+    .auction-card .content {
+      padding: 16px 18px 18px;
+    }
+
+    .auction-card .content h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #f1f5f9;
+    }
+
+    .auction-card .content .category {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 12px;
+    }
+
+    .auction-card .content .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .auction-card .content .price-row .current-price {
+      font-size: 20px;
+      font-weight: 700;
+      color: #3b82f6;
+    }
+
+    .auction-card .content .price-row .current-price small {
+      font-size: 12px;
+      font-weight: 400;
+      color: #94a3b8;
+    }
+
+    .auction-card .content .price-row .bid-count {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .auction-card .content .bid-btn {
+      width: 100%;
+      padding: 10px;
+      background: #3b82f6;
+      border: none;
+      border-radius: 40px;
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .auction-card .content .bid-btn:hover {
+      background: #2563eb;
+      transform: scale(1.02);
+    }
+
+    .auction-card .content .bid-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* ===== TABLE RIWAYAT ===== */
+    .history-section {
+      background: #1e293b;
+      border: 1px solid #2d3748;
+      border-radius: 20px;
+      padding: 20px 24px;
+      margin-top: 16px;
+      margin-bottom: 40px;
+    }
+
+    .history-section h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .history-section h3 i {
+      color: #3b82f6;
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .history-table th {
+      text-align: left;
+      padding: 10px 8px;
+      color: #94a3b8;
+      font-weight: 500;
+      border-bottom: 1px solid #334155;
+    }
+
+    .history-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .history-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .history-table .highlight {
+      color: #3b82f6;
+      font-weight: 600;
+    }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: #1e293b;
+      border: 1px solid #2d3748;
+      border-radius: 24px;
+      max-width: 480px;
+      width: 100%;
+      padding: 32px;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
+      animation: modalFade 0.25s ease;
+    }
+
+    @keyframes modalFade {
+      from {
+        opacity: 0;
+        transform: scale(0.96) translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .modal .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal .modal-header h3 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .modal .modal-header .close-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 24px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .modal .modal-header .close-btn:hover {
+      color: #e2e8f0;
+    }
+
+    .modal .modal-body .item-info {
+      background: #0f172a;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+      border-left: 4px solid #3b82f6;
+    }
+
+    .modal .modal-body .item-info .item-name {
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    .modal .modal-body .item-info .item-price {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    .modal .modal-body .item-info .item-price strong {
+      color: #3b82f6;
+    }
+
+    .modal .modal-body label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+
+    .modal .modal-body input[type="number"] {
+      width: 100%;
+      padding: 12px 16px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      color: #e2e8f0;
+      font-size: 16px;
+      font-weight: 600;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .modal .modal-body input[type="number"]:focus {
+      border-color: #3b82f6;
+    }
+
+    .modal .modal-body .min-bid-hint {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 6px;
+    }
+
+    .modal .modal-footer {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .modal .modal-footer button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .modal .modal-footer .btn-cancel {
+      background: #2d3748;
+      color: #94a3b8;
+    }
+
+    .modal .modal-footer .btn-cancel:hover {
+      background: #3d4a5c;
+    }
+
+    .modal .modal-footer .btn-submit {
+      background: #3b82f6;
+      color: #fff;
+    }
+
+    .modal .modal-footer .btn-submit:hover {
+      background: #2563eb;
+    }
+
+    /* ===== NOTIFIKASI TOAST ===== */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e293b;
+      border: 1px solid #3b82f6;
+      border-radius: 16px;
+      padding: 16px 24px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 2000;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast i {
+      font-size: 20px;
+      color: #3b82f6;
+    }
+
+    .toast .toast-msg {
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      body {
+        padding: 16px;
+      }
+      .header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+      .nav {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .hero {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 24px;
+      }
+      .hero-stats {
+        width: 100%;
+        justify-content: space-around;
+      }
+      .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .filter-bar input[type="text"] {
+        min-width: unset;
+      }
+      .auction-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .history-table {
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .auction-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero-content h2 {
+        font-size: 22px;
+      }
+      .modal {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="logo">
+      <i class="fas fa-gavel"></i>
+      <h1>AuctionHub</h1>
+    </div>
+    <nav class="nav">
+      <a href="#" class="active"><i class="fas fa-home"></i> Beranda</a>
+      <a href="#"><i class="fas fa-fire"></i> Populer</a>
+      <a href="#"><i class="fas fa-clock"></i> Segera</a>
+      <a href="#"><i class="fas fa-chart-line"></i> Statistik</a>
+      <div class="user-badge">
+        <span style="background:#3b82f6; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:600; color:#fff;">DK</span>
+        <span>Diden K.</span>
+        <i class="fas fa-chevron-down" style="font-size:12px; color:#64748b;"></i>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <div class="hero-content">
+      <h2>Temukan <span>Barang Koleksi</span> Terbaik</h2>
+      <p>Bergabunglah dalam lelang eksklusif dan dapatkan penawaran menarik.</p>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="number" id="activeAuctions">12</div>
+        <div class="label">Lelang Aktif</div>
+      </div>
+      <div class="stat">
+        <div class="number" id="totalBids">47</div>
+        <div class="label">Total Penawaran</div>
+      </div>
+      <div class="stat">
+        <div class="number" id="totalUsers">128</div>
+        <div class="label">Peserta</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FILTER ===== -->
+  <div class="filter-bar">
+    <input type="text" id="searchInput" placeholder="🔍 Cari item lelang...">
+    <div class="filter-group">
+      <button class="filter-btn active" data-filter="all">Semua</button>
+      <button class="filter-btn" data-filter="elektronik">Elektronik</button>
+      <button class="filter-btn" data-filter="seni">Seni</button>
+      <button class="filter-btn" data-filter="koleksi">Koleksi</button>
+      <button class="filter-btn" data-filter="fashion">Fashion</button>
+    </div>
+  </div>
+
+  <!-- ===== GRID ITEM LELANG ===== -->
+  <div class="auction-grid" id="auctionGrid">
+    <!-- Data akan di-generate oleh JavaScript -->
+  </div>
+
+  <!-- ===== RIWAYAT PENAWARAN ===== -->
+  <section class="history-section">
+    <h3><i class="fas fa-list-ul"></i> Riwayat Penawaran</h3>
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Penawar</th>
+          <th>Jumlah</th>
+          <th>Waktu</th>
+        </tr>
+      </thead>
+      <tbody id="historyBody">
+        <!-- Data diisi oleh JavaScript -->
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ===== MODAL LELANG ===== -->
+  <div class="modal-overlay" id="bidModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3><i class="fas fa-gavel" style="color:#3b82f6;"></i> Lelang Sekarang</h3>
+        <button class="close-btn" id="closeModalBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="item-info" id="modalItemInfo">
+          <div class="item-name" id="modalItemName">Nama Item</div>
+          <div class="item-price">Harga saat ini: <strong id="modalCurrentPrice">Rp0</strong></div>
+        </div>
+        <label for="bidAmount">Masukkan tawaran Anda (Rp)</label>
+        <input type="number" id="bidAmount" min="1" step="1000" placeholder="Misal: 2500000">
+        <div class="min-bid-hint" id="minBidHint">Minimal tawaran: Rp1.000.000</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" id="cancelBidBtn">Batal</button>
+        <button class="btn-submit" id="submitBidBtn"><i class="fas fa-check"></i> Kirim Tawaran</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST NOTIFIKASI ===== -->
+  <div class="toast" id="toast">
+    <i class="fas fa-check-circle"></i>
+    <span class="toast-msg" id="toastMsg">Tawaran berhasil dikirim!</span>
+  </div>
+
+  <script>
+    // ============================================================
+    // DATA LELANG
+    // ============================================================
+    const ITEMS = [{
+      id: 1,
+      name: 'MacBook Pro 16" M3 Pro',
+      category: 'elektronik',
+      currentPrice: 28500000,
+      bidCount: 12,
+      timeLeft: 7200, // detik
+      imageIcon: '💻',
+      badge: 'Terlaris'
+    }, {
+      id: 2,
+      name: 'Lukisan Abstrak Karya S. Utomo',
+      category: 'seni',
+      currentPrice: 4500000,
+      bidCount: 8,
+      timeLeft: 14400,
+      imageIcon: '🎨',
+      badge: 'Koleksi Langka'
+    }, {
+      id: 3,
+      name: 'Jam Tangan Rolex Submariner',
+      category: 'koleksi',
+      currentPrice: 125000000,
+      bidCount: 24,
+      timeLeft: 3600,
+      imageIcon: '⌚',
+      badge: 'Premium'
+    }, {
+      id: 4,
+      name: 'Jaket Kulit Vintage',
+      category: 'fashion',
+      currentPrice: 3200000,
+      bidCount: 5,
+      timeLeft: 21600,
+      imageIcon: '🧥',
+      badge: 'Limited'
+    }, {
+      id: 5,
+      name: 'PlayStation 5 Digital Edition',
+      category: 'elektronik',
+      currentPrice: 7500000,
+      bidCount: 18,
+      timeLeft: 10800,
+      imageIcon: '🎮',
+      badge: 'Hot Item'
+    }, {
+      id: 6,
+      name: 'Patung Buddha Kuno',
+      category: 'koleksi',
+      currentPrice: 8900000,
+      bidCount: 7,
+      timeLeft: 28800,
+      imageIcon: '🗿',
+      badge: 'Antik'
+    }, {
+      id: 7,
+      name: 'Kamera Sony A7 IV + Lens Kit',
+      category: 'elektronik',
+      currentPrice: 32000000,
+      bidCount: 14,
+      timeLeft: 5400,
+      imageIcon: '📷',
+      badge: 'Pro'
+    }, {
+      id: 8,
+      name: 'Tas Tangan Hermès Birkin',
+      category: 'fashion',
+      currentPrice: 95000000,
+      bidCount: 10,
+      timeLeft: 43200,
+      imageIcon: '👜',
+      badge: 'Luxury'
+    }];
+
+    // Riwayat penawaran (data awal)
+    const BID_HISTORY = [
+      { item: 'MacBook Pro 16" M3 Pro', bidder: 'Ahmad F.', amount: 28500000, time: '10 menit lalu' },
+      { item: 'Jam Tangan Rolex Submariner', bidder: 'Budi S.', amount: 125000000, time: '25 menit lalu' },
+      { item: 'Lukisan Abstrak Karya S. Utomo', bidder: 'Citra D.', amount: 4500000, time: '1 jam lalu' },
+      { item: 'PlayStation 5 Digital Edition', bidder: 'Eko P.', amount: 7500000, time: '2 jam lalu' },
+    ];
+
+    // State
+    let currentItems = [...ITEMS];
+    let currentModalItem = null;
+    let timerIntervals = [];
+
+    // ============================================================
+    // RENDER FUNGSI
+    // ============================================================
+
+    // Render grid lelang
+    function renderItems(items) {
+      const grid = document.getElementById('auctionGrid');
+      grid.innerHTML = '';
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'auction-card';
+        card.dataset.category = item.category;
+        card.dataset.id = item.id;
+
+        const timeStr = formatTime(item.timeLeft);
+        card.innerHTML = `
+          <div class="image" style="background: linear-gradient(135deg, #2d3748, #1e293b);">
+            <span style="font-size:64px;">${item.imageIcon}</span>
+            <span class="badge">${item.badge}</span>
+            <span class="time-left" id="timer-${item.id}">
+              <i class="fas fa-clock"></i> ${timeStr}
+            </span>
+          </div>
+          <div class="content">
+            <h3>${item.name}</h3>
+            <div class="category">${item.category.charAt(0).toUpperCase() + item.category.slice(1)}</div>
+            <div class="price-row">
+              <span class="current-price">Rp${item.currentPrice.toLocaleString('id-ID')} <small>tertinggi</small></span>
+              <span class="bid-count"><i class="fas fa-users"></i> ${item.bidCount} tawaran</span>
+            </div>
+            <button class="bid-btn" data-id="${item.id}">
+              <i class="fas fa-gavel"></i> Tawar Sekarang
+            </button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      // Event listener tombol bid
+      document.querySelectorAll('.bid-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const id = parseInt(this.dataset.id);
+          openBidModal(id);
+        });
+      });
+    }
+
+    // Render riwayat penawaran
+    function renderHistory(history) {
+      const tbody = document.getElementById('historyBody');
+      tbody.innerHTML = '';
+      history.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.item}</td>
+          <td>${row.bidder}</td>
+          <td class="highlight">Rp${row.amount.toLocaleString('id-ID')}</td>
+          <td>${row.time}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Update timer untuk semua item
+    function updateTimers() {
+      let anyExpired = false;
+      currentItems = currentItems.map(item => {
+        if (item.timeLeft > 0) {
+          item.timeLeft--;
+        } else {
+          anyExpired = true;
+        }
+        return item;
+      });
+      // Update tampilan timer
+      document.querySelectorAll('.auction-card').forEach(card => {
+        const id = parseInt(card.dataset.id);
+        const item = currentItems.find(it => it.id === id);
+        if (item) {
+          const timerEl = card.querySelector('.time-left');
+          if (timerEl) {
+            timerEl.innerHTML = `<i class="fas fa-clock"></i> ${formatTime(item.timeLeft)}`;
+            if (item.timeLeft === 0) {
+              timerEl.style.color = '#ef4444';
+              timerEl.innerHTML = `<i class="fas fa-hourglass-end"></i> Selesai`;
+            }
+          }
+        }
+      });
+      if (anyExpired) {
+        // Refresh data jika ada yang habis (bisa tambahkan logika)
+        console.log('Ada lelang yang berakhir!');
+      }
+    }
+
+    // Format waktu (detik -> HH:MM:SS)
+    function formatTime(seconds) {
+      if (seconds <= 0) return '00:00:00';
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = seconds % 60;
+      return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }
+
+    // Filter item berdasarkan kategori
+    function filterItems(category) {
+      if (category === 'all') {
+        currentItems = [...ITEMS];
+      } else {
+        currentItems = ITEMS.filter(item => item.category === category);
+      }
+      renderItems(currentItems);
+      // Update timer untuk item yang ditampilkan
+      startTimers();
+    }
+
+    // ============================================================
+    // MODAL
+    // ============================================================
+
+    function openBidModal(itemId) {
+      const item = currentItems.find(it => it.id === itemId);
+      if (!item) return;
+      currentModalItem = item;
+      document.getElementById('modalItemName').textContent = item.name;
+      document.getElementById('modalCurrentPrice').textContent = `Rp${item.currentPrice.toLocaleString('id-ID')}`;
+      const minBid = Math.max(1000, Math.round(item.currentPrice * 0.05) + 1000);
+      document.getElementById('minBidHint').textContent = `Minimal tawaran: Rp${minBid.toLocaleString('id-ID')}`;
+      document.getElementById('bidAmount').value = '';
+      document.getElementById('bidAmount').min = minBid;
+      document.getElementById('bidAmount').placeholder = `Min Rp${minBid.toLocaleString('id-ID')}`;
+      document.getElementById('bidModal').classList.add('active');
+    }
+
+    function closeBidModal() {
+      document.getElementById('bidModal').classList.remove('active');
+      currentModalItem = null;
+    }
+
+    // Submit tawaran
+    function submitBid() {
+      if (!currentModalItem) return;
+      const input = document.getElementById('bidAmount');
+      const amount = parseInt(input.value);
+      if (isNaN(amount) || amount <= 0) {
+        showToast('Masukkan jumlah tawaran yang valid.', 'error');
+        return;
+      }
+      const minBid = Math.max(1000, Math.round(currentModalItem.currentPrice * 0.05) + 1000);
+      if (amount < minBid) {
+        showToast(`Tawaran minimal Rp${minBid.toLocaleString('id-ID')}`, 'error');
+        return;
+      }
+
+      // Update item
+      const item = currentItems.find(it => it.id === currentModalItem.id);
+      if (item) {
+        item.currentPrice = amount;
+        item.bidCount += 1;
+        // Tambah riwayat
+        const names = ['Andi', 'Budi', 'Citra', 'Dedi', 'Eko', 'Fina', 'Gilang', 'Hana'];
+        const bidder = names[Math.floor(Math.random() * names.length)] + ' ' + (Math.floor(Math.random() * 9) + 1);
+        BID_HISTORY.unshift({
+          item: item.name,
+          bidder: bidder,
+          amount: amount,
+          time: 'Baru saja'
+        });
+        // Render ulang
+        renderItems(currentItems);
+        renderHistory(BID_HISTORY);
+        closeBidModal();
+        showToast(`✅ Tawaran Rp${amount.toLocaleString('id-ID')} untuk "${item.name}" berhasil dikirim!`, 'success');
+        // Update stats
+        updateStats();
+      }
+    }
+
+    // ============================================================
+    // TOAST
+    // ============================================================
+
+    let toastTimeout = null;
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const msgEl = document.getElementById('toastMsg');
+      msgEl.textContent = message;
+      toast.className = 'toast';
+      if (type === 'error') {
+        toast.style.borderColor = '#ef4444';
+        toast.querySelector('i').style.color = '#ef4444';
+      } else {
+        toast.style.borderColor = '#3b82f6';
+        toast.querySelector('i').style.color = '#3b82f6';
+      }
+      clearTimeout(toastTimeout);
+      toast.classList.add('show');
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 4000);
+    }
+
+    // ============================================================
+    // STATS
+    // ============================================================
+
+    function updateStats() {
+      document.getElementById('activeAuctions').textContent = currentItems.filter(i => i.timeLeft > 0).length;
+      const totalBids = currentItems.reduce((sum, i) => sum + i.bidCount, 0);
+      document.getElementById('totalBids').textContent = totalBids;
+    }
+
+    // ============================================================
+    // TIMER (update setiap detik)
+    // ============================================================
+
+    function startTimers() {
+      // Hentikan timer sebelumnya
+      timerIntervals.forEach(clearInterval);
+      timerIntervals = [];
+      // Timer utama
+      const mainTimer = setInterval(() => {
+        updateTimers();
+        updateStats();
+      }, 1000);
+      timerIntervals.push(mainTimer);
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+
+    function init() {
+      renderItems(currentItems);
+      renderHistory(BID_HISTORY);
+      updateStats();
+      startTimers();
+
+      // Filter
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          const filter = this.dataset.filter;
+          filterItems(filter);
+          // Update statistik
+          updateStats();
+        });
+      });
+
+      // Search
+      document.getElementById('searchInput').addEventListener('input', function(e) {
+        const keyword = e.target.value.toLowerCase().trim();
+        let filtered = [...ITEMS];
+        if (keyword) {
+          filtered = filtered.filter(item =>
+            item.name.toLowerCase().includes(keyword) ||
+            item.category.toLowerCase().includes(keyword)
+          );
+        }
+        // Terapkan filter kategori yang sedang aktif
+        const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
+        if (activeFilter !== 'all') {
+          filtered = filtered.filter(item => item.category === activeFilter);
+        }
+        currentItems = filtered;
+        renderItems(currentItems);
+        updateStats();
+      });
+
+      // Modal events
+      document.getElementById('closeModalBtn').addEventListener('click', closeBidModal);
+      document.getElementById('cancelBidBtn').addEventListener('click', closeBidModal);
+      document.getElementById('submitBidBtn').addEventListener('click', submitBid);
+      // Klik overlay
+      document.getElementById('bidModal').addEventListener('click', function(e) {
+        if (e.target === this) closeBidModal();
+      });
+      // Enter key di input bid
+      document.getElementById('bidAmount').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') submitBid();
+      });
+
+      console.log('✅ Halaman simulasi lelang siap!');
+    }
+
+    // Jalankan init setelah DOM siap
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
