@@ -189,6 +189,73 @@
   </div>
 </div>
 <script>
+  // Tambahkan di dalam script halaman
+window.playMelody = function(notesStr, durationMs = 350) {
+  if (!audioCtx || !isUnlocked) {
+    console.warn('Audio belum diaktifkan!');
+    return 'Audio belum diaktifkan';
+  }
+  
+  const notes = notesStr.split(',').map(s => s.trim());
+  const freqMap = {
+    'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'F4': 349.23,
+    'G4': 392.00, 'A4': 440.00, 'B4': 493.88, 'C5': 523.25
+  };
+  
+  const instr = getInstrumentConfig(instrumentSelect.value);
+  const now = audioCtx.currentTime;
+  const durationSec = durationMs / 1000;
+  let time = now;
+  
+  for (const noteName of notes) {
+    const freq = freqMap[noteName];
+    if (!freq) {
+      // Jika not tidak dikenal, tetap tambahkan waktu (misal untuk istirahat)
+      time += durationSec;
+      continue;
+    }
+    
+    const osc = audioCtx.createOscillator();
+    osc.type = instr.type;
+    osc.frequency.value = freq;
+    
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0, time);
+    gain.gain.linearRampToValueAtTime(instr.gain * 0.8, time + instr.attack);
+    gain.gain.setValueAtTime(instr.gain * 0.8, time + instr.attack + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + durationSec - 0.05);
+    
+    let filter = null;
+    if (instr.filterFreq) {
+      filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = instr.filterFreq;
+      osc.connect(filter);
+      filter.connect(gain);
+    } else {
+      osc.connect(gain);
+    }
+    
+    if (instr.vibrato) {
+      const vibrato = audioCtx.createOscillator();
+      const vGain = audioCtx.createGain();
+      vibrato.frequency.value = 5;
+      vGain.gain.value = 4;
+      vibrato.connect(vGain);
+      vGain.connect(osc.frequency);
+      vibrato.start(time);
+      vibrato.stop(time + durationSec + 0.1);
+    }
+    
+    gain.connect(audioCtx.destination);
+    osc.start(time);
+    osc.stop(time + durationSec + 0.05);
+    
+    time += durationSec;
+  }
+  
+  return `✅ Memutar ${notes.length} not dengan durasi ${durationMs}ms`;
+};
   (function() {
     let audioCtx = null;
     let isUnlocked = false;
