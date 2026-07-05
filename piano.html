@@ -16,7 +16,7 @@
       padding: 20px;
     }
     .container {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255,255,255,0.08);
       backdrop-filter: blur(6px);
       border-radius: 60px 60px 30px 30px;
       padding: 40px 30px 30px;
@@ -189,78 +189,11 @@
   </div>
 </div>
 <script>
-  // Tambahkan di dalam script halaman
-window.playMelody = function(notesStr, durationMs = 350) {
-  if (!audioCtx || !isUnlocked) {
-    console.warn('Audio belum diaktifkan!');
-    return 'Audio belum diaktifkan';
-  }
-  
-  const notes = notesStr.split(',').map(s => s.trim());
-  const freqMap = {
-    'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'F4': 349.23,
-    'G4': 392.00, 'A4': 440.00, 'B4': 493.88, 'C5': 523.25
-  };
-  
-  const instr = getInstrumentConfig(instrumentSelect.value);
-  const now = audioCtx.currentTime;
-  const durationSec = durationMs / 1000;
-  let time = now;
-  
-  for (const noteName of notes) {
-    const freq = freqMap[noteName];
-    if (!freq) {
-      // Jika not tidak dikenal, tetap tambahkan waktu (misal untuk istirahat)
-      time += durationSec;
-      continue;
-    }
-    
-    const osc = audioCtx.createOscillator();
-    osc.type = instr.type;
-    osc.frequency.value = freq;
-    
-    const gain = audioCtx.createGain();
-    gain.gain.setValueAtTime(0, time);
-    gain.gain.linearRampToValueAtTime(instr.gain * 0.8, time + instr.attack);
-    gain.gain.setValueAtTime(instr.gain * 0.8, time + instr.attack + 0.05);
-    gain.gain.exponentialRampToValueAtTime(0.001, time + durationSec - 0.05);
-    
-    let filter = null;
-    if (instr.filterFreq) {
-      filter = audioCtx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.value = instr.filterFreq;
-      osc.connect(filter);
-      filter.connect(gain);
-    } else {
-      osc.connect(gain);
-    }
-    
-    if (instr.vibrato) {
-      const vibrato = audioCtx.createOscillator();
-      const vGain = audioCtx.createGain();
-      vibrato.frequency.value = 5;
-      vGain.gain.value = 4;
-      vibrato.connect(vGain);
-      vGain.connect(osc.frequency);
-      vibrato.start(time);
-      vibrato.stop(time + durationSec + 0.1);
-    }
-    
-    gain.connect(audioCtx.destination);
-    osc.start(time);
-    osc.stop(time + durationSec + 0.05);
-    
-    time += durationSec;
-  }
-  
-  return `✅ Memutar ${notes.length} not dengan durasi ${durationMs}ms`;
-};
   (function() {
     let audioCtx = null;
     let isUnlocked = false;
     let isHolding = false;
-    let preventClick = false; // 🔥 FLAG BARU
+    let preventClick = false;
     let activeOscillators = {};
 
     const unlockBtn = document.getElementById('unlockBtn');
@@ -417,7 +350,7 @@ window.playMelody = function(notesStr, durationMs = 350) {
       } catch(e) { console.warn('Start note error:', e); }
     }
 
-    // Hentikan not panjang (mouseup / mouseleave) – SMOOTH RELEASE
+    // Hentikan not panjang (mouseup / mouseleave)
     function stopNote(noteName) {
       const active = activeOscillators[noteName];
       if (!active) return;
@@ -439,6 +372,77 @@ window.playMelody = function(notesStr, durationMs = 350) {
       } catch(e) { console.warn('Stop note error:', e); }
     }
 
+    // ===== 🎵 FUNGSI MELODY UNTUK PLAY SEQUENCE (STABIL) =====
+    window.playMelody = function(notesStr, durationMs = 350) {
+      if (!audioCtx || !isUnlocked) {
+        return '❌ Audio belum diaktifkan!';
+      }
+      
+      const notes = notesStr.split(',').map(s => s.trim());
+      const freqMap = {
+        'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'F4': 349.23,
+        'G4': 392.00, 'A4': 440.00, 'B4': 493.88, 'C5': 523.25
+      };
+      
+      const instr = getInstrumentConfig(instrumentSelect.value);
+      const now = audioCtx.currentTime;
+      const durationSec = durationMs / 1000;
+      let time = now;
+      
+      for (const noteName of notes) {
+        const freq = freqMap[noteName];
+        if (!freq) {
+          // Istirahat (kosong)
+          time += durationSec;
+          continue;
+        }
+        
+        try {
+          const osc = audioCtx.createOscillator();
+          osc.type = instr.type;
+          osc.frequency.value = freq;
+          
+          const gain = audioCtx.createGain();
+          gain.gain.setValueAtTime(0, time);
+          gain.gain.linearRampToValueAtTime(instr.gain * 0.8, time + instr.attack);
+          gain.gain.setValueAtTime(instr.gain * 0.8, time + instr.attack + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, time + durationSec - 0.05);
+          
+          let filter = null;
+          if (instr.filterFreq) {
+            filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.value = instr.filterFreq;
+            osc.connect(filter);
+            filter.connect(gain);
+          } else {
+            osc.connect(gain);
+          }
+          
+          if (instr.vibrato) {
+            const vibrato = audioCtx.createOscillator();
+            const vGain = audioCtx.createGain();
+            vibrato.frequency.value = 5;
+            vGain.gain.value = 4;
+            vibrato.connect(vGain);
+            vGain.connect(osc.frequency);
+            vibrato.start(time);
+            vibrato.stop(time + durationSec + 0.1);
+          }
+          
+          gain.connect(audioCtx.destination);
+          osc.start(time);
+          osc.stop(time + durationSec + 0.05);
+        } catch(e) {
+          console.warn('Note error:', noteName, e);
+        }
+        
+        time += durationSec;
+      }
+      
+      return `✅ Memutar ${notes.length} not dengan durasi ${durationMs}ms (instrumen: ${instrumentSelect.value})`;
+    };
+
     // === EVENT LISTENERS ===
 
     unlockBtn.addEventListener('click', unlockAudio);
@@ -446,28 +450,22 @@ window.playMelody = function(notesStr, durationMs = 350) {
     document.querySelectorAll('.tooth').forEach(key => {
       const note = key.dataset.note;
 
-      // Mouse down → mulai not panjang & aktifkan preventClick
       key.addEventListener('mousedown', function(e) {
         e.preventDefault();
         isHolding = true;
-        preventClick = true; // 🔥 Cegah click yang akan datang
+        preventClick = true;
         if (!isUnlocked || (audioCtx && audioCtx.state === 'suspended')) unlockAudio();
         if (isUnlocked && audioCtx && audioCtx.state === 'running') {
           startNote(note);
         }
       });
 
-      // Mouse up → hentikan not panjang, tapi jangan langsung reset preventClick
       key.addEventListener('mouseup', function(e) {
         isHolding = false;
-        // Beri jeda 150ms sebelum mengizinkan click (agar click tidak terpicu)
-        setTimeout(() => {
-          preventClick = false;
-        }, 150);
+        setTimeout(() => { preventClick = false; }, 150);
         stopNote(note);
       });
 
-      // Mouse leave → hentikan jika masih menahan
       key.addEventListener('mouseleave', function(e) {
         if (isHolding) {
           isHolding = false;
@@ -476,13 +474,8 @@ window.playMelody = function(notesStr, durationMs = 350) {
         }
       });
 
-      // Click → hanya jika tidak sedang menahan dan preventClick false
       key.addEventListener('click', function(e) {
-        if (preventClick) {
-          // Reset flag agar tidak mengganggu click berikutnya
-          preventClick = false;
-          return;
-        }
+        if (preventClick) { preventClick = false; return; }
         if (isHolding) return;
         if (!isUnlocked || (audioCtx && audioCtx.state === 'suspended')) unlockAudio();
         if (isUnlocked && audioCtx && audioCtx.state === 'running') {
@@ -504,7 +497,7 @@ window.playMelody = function(notesStr, durationMs = 350) {
     }, 1000);
 
     updateUI();
-    console.log('🦷 Tooth Piano dengan release halus & preventClick!');
+    console.log('🦷 Tooth Piano dengan playMelody() siap!');
   })();
 </script>
 </body>
