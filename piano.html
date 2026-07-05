@@ -372,42 +372,57 @@
       } catch(e) { console.warn('Stop note error:', e); }
     }
 
-    // ===== 🎵 FUNGSI MELODY UNTUK PLAY SEQUENCE (STABIL) =====
-    window.playMelody = function(notesStr, durationMs = 350) {
+    // ===== 🎵 FUNGSI MELODY UNTUK PLAY SEQUENCE (STABIL & DURASI BERVARIASI) =====
+    window.playMelody = function(notesWithDuration) {
       if (!audioCtx || !isUnlocked) {
         return '❌ Audio belum diaktifkan!';
       }
-      
-      const notes = notesStr.split(',').map(s => s.trim());
+
+      const parts = notesWithDuration.split(',').map(s => s.trim());
+      // Format: C4,350,D4,350,E4,700
+      const notes = [];
+      for (let i = 0; i < parts.length; i += 2) {
+        const noteName = parts[i];
+        const duration = parseInt(parts[i+1], 10);
+        if (noteName && !isNaN(duration)) {
+          notes.push({ note: noteName, duration: duration });
+        }
+      }
+
+      if (notes.length === 0) {
+        return '❌ Format salah. Gunakan: not,durasi,not,durasi,... (contoh: C4,350,D4,350,E4,700)';
+      }
+
       const freqMap = {
         'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'F4': 349.23,
         'G4': 392.00, 'A4': 440.00, 'B4': 493.88, 'C5': 523.25
       };
-      
+
       const instr = getInstrumentConfig(instrumentSelect.value);
       const now = audioCtx.currentTime;
-      const durationSec = durationMs / 1000;
       let time = now;
-      
-      for (const noteName of notes) {
-        const freq = freqMap[noteName];
+      let totalNotes = 0;
+
+      for (const { note, duration } of notes) {
+        const freq = freqMap[note];
+        const durationSec = duration / 1000;
+
         if (!freq) {
-          // Istirahat (kosong)
           time += durationSec;
           continue;
         }
-        
+
         try {
           const osc = audioCtx.createOscillator();
           osc.type = instr.type;
           osc.frequency.value = freq;
-          
+
           const gain = audioCtx.createGain();
           gain.gain.setValueAtTime(0, time);
           gain.gain.linearRampToValueAtTime(instr.gain * 0.8, time + instr.attack);
           gain.gain.setValueAtTime(instr.gain * 0.8, time + instr.attack + 0.05);
           gain.gain.exponentialRampToValueAtTime(0.001, time + durationSec - 0.05);
-          
+
           let filter = null;
           if (instr.filterFreq) {
             filter = audioCtx.createBiquadFilter();
@@ -418,7 +433,7 @@
           } else {
             osc.connect(gain);
           }
-          
+
           if (instr.vibrato) {
             const vibrato = audioCtx.createOscillator();
             const vGain = audioCtx.createGain();
@@ -429,18 +444,32 @@
             vibrato.start(time);
             vibrato.stop(time + durationSec + 0.1);
           }
-          
+
           gain.connect(audioCtx.destination);
           osc.start(time);
           osc.stop(time + durationSec + 0.05);
+
+          // ===== ANIMASI PENDEK =====
+          const key = document.querySelector(`.tooth[data-note="${note}"]`);
+          if (key) {
+            const startTime = (time - now) * 1000;
+            setTimeout(() => {
+              key.classList.add('active');
+            }, Math.max(0, startTime));
+            setTimeout(() => {
+              key.classList.remove('active');
+            }, Math.max(0, startTime + duration));
+          }
+
+          totalNotes++;
         } catch(e) {
-          console.warn('Note error:', noteName, e);
+          console.warn('Note error:', note, e);
         }
-        
+
         time += durationSec;
       }
-      
-      return `✅ Memutar ${notes.length} not dengan durasi ${durationMs}ms (instrumen: ${instrumentSelect.value})`;
+
+      return `✅ Memutar ${totalNotes} not dengan durasi bervariasi (instrumen: ${instrumentSelect.value})`;
     };
 
     // === EVENT LISTENERS ===
@@ -497,7 +526,7 @@
     }, 1000);
 
     updateUI();
-    console.log('🦷 Tooth Piano dengan playMelody() siap!');
+    console.log('🦷 Tooth Piano dengan playMelody() & durasi bervariasi siap!');
   })();
 </script>
 </body>
