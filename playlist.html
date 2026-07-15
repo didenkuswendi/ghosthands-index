@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🎵 Music Playlist</title>
+    <style>
+        /* ----- Reset & Base ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0b0d11;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+            background-image: radial-gradient(ellipse at 20% 50%, rgba(88, 40, 200, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 200, 255, 0.06) 0%, transparent 50%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 820px;
+            background: rgba(18, 22, 30, 0.85);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-radius: 32px;
+            padding: 2.4rem 2.8rem 3rem;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.3s ease;
+        }
+
+        /* ----- Header ----- */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2.2rem;
+        }
+
+        .header-icon {
+            font-size: 2rem;
+            line-height: 1;
+        }
+
+        .header h1 {
+            font-size: 1.85rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #f0f2fa 0%, #b0b8d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header .badge {
+            margin-left: auto;
+            background: rgba(120, 100, 255, 0.18);
+            color: #b4adff;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.3rem 0.9rem;
+            border-radius: 40px;
+            letter-spacing: 0.3px;
+            border: 1px solid rgba(120, 100, 255, 0.15);
+            backdrop-filter: blur(4px);
+        }
+
+        /* ----- Form ----- */
+        .form-wrapper {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 1.8rem 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 2.5rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-wrapper:focus-within {
+            border-color: rgba(120, 100, 255, 0.25);
+        }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            margin-bottom: 1.4rem;
+        }
+
+        .form-row:last-of-type {
+            margin-bottom: 1.8rem;
+        }
+
+        .form-row label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            color: #8a92b0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-row label .label-icon {
+            font-size: 1rem;
+        }
+
+        .form-row input,
+        .form-row textarea {
+            width: 100%;
+            background: rgba(12, 15, 22, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 14px;
+            padding: 0.9rem 1.2rem;
+            font-size: 0.95rem;
+            font-family: inherit;
+            color: #e8ecf5;
+            transition: all 0.25s ease;
+            outline: none;
+        }
+
+        .form-row input::placeholder,
+        .form-row textarea::placeholder {
+            color: #4d5470;
+            font-weight: 400;
+        }
+
+        .form-row input:focus,
+        .form-row textarea:focus {
+            border-color: #7c6aff;
+            box-shadow: 0 0 0 4px rgba(120, 100, 255, 0.12);
+            background: rgba(12, 15, 22, 0.9);
+        }
+
+        .form-row textarea {
+            min-height: 72px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        /* ----- Submit Button ----- */
+        .submit-btn {
+            width: 100%;
+            padding: 0.95rem;
+            border: none;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            color: #fff;
+            background: linear-gradient(135deg, #7c6aff, #5a4bd1);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 20px rgba(120, 100, 255, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), transparent 60%);
+            pointer-events: none;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(120, 100, 255, 0.35);
+            background: linear-gradient(135deg, #8b7aff, #6556e0);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0px);
+            box-shadow: 0 4px 15px rgba(120, 100, 255, 0.2);
+        }
+
+        .submit-btn .btn-icon {
+            font-size: 1.2rem;
+        }
+
+        /* ----- Table Section ----- */
+        .table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.2rem;
+        }
+
+        .table-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #d0d6ec;
+            letter-spacing: -0.01em;
+        }
+
+        .table-header .count-badge {
+            background: rgba(255, 255, 255, 0.06);
+            padding: 0.25rem 0.9rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #8a92b0;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .table-wrapper {
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .playlist-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .playlist-table thead {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .playlist-table th {
+            text-align: left;
+            padding: 0.9rem 1.2rem;
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #6a7294;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .playlist-table th:last-child {
+            text-align: right;
+            width: 80px;
+        }
+
+        .playlist-table td {
+            padding: 0.9rem 1.2rem;
+            color: #d8def0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            vertical-align: middle;
+            transition: background 0.2s ease;
+        }
+
+        .playlist-table tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        .playlist-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .playlist-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .playlist-table .col-title {
+            font-weight: 500;
+            color: #eef2fc;
+        }
+
+        .playlist-table .col-url {
+            color: #8892b4;
+            font-size: 0.8rem;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .playlist-table .col-url a {
+            color: #8892b4;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .playlist-table .col-url a:hover {
+            color: #b4adff;
+            text-decoration: underline;
+        }
+
+        .playlist-table .col-actions {
+            text-align: right;
+        }
+
+        /* ----- Delete Button ----- */
+        .delete-btn {
+            background: rgba(255, 70, 70, 0.08);
+            border: none;
+            color: #b07a7a;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 70, 70, 0.05);
+        }
+
+        .delete-btn:hover {
+            background: rgba(255, 70, 70, 0.18);
+            color: #ff8a8a;
+            transform: scale(1.05);
+            border-color: rgba(255, 70, 70, 0.15);
+        }
+
+        .delete-btn:active {
+            transform: scale(0.92);
+        }
+
+        /* ----- Empty State ----- */
+        .empty-state {
+            text-align: center;
+            padding: 2.6rem 1.5rem;
+            color: #4d5470;
+        }
+
+        .empty-state .empty-icon {
+            font-size: 2.6rem;
+            margin-bottom: 0.6rem;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+        .empty-state .empty-sub {
+            font-size: 0.75rem;
+            color: #3a405a;
+            margin-top: 0.2rem;
+        }
+
+        /* ----- Animations ----- */
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(10px) scale(0.98);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .playlist-table tbody tr {
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+        }
+
+        .playlist-table tbody tr.removing {
+            animation: fadeOut 0.25s ease forwards;
+        }
+
+        /* ----- Toast Notification ----- */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(18, 22, 30, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 0.8rem 2rem;
+            border-radius: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+            color: #e8ecf5;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            z-index: 999;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+
+        .toast .toast-icon {
+            font-size: 1.2rem;
+        }
+
+        /* ----- Responsive ----- */
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.5rem 1.2rem 2rem;
+                border-radius: 24px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+            .header .badge {
+                font-size: 0.6rem;
+                padding: 0.2rem 0.7rem;
+            }
+
+            .form-wrapper {
+                padding: 1.2rem 1rem;
+            }
+
+            .form-row input,
+            .form-row textarea {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .playlist-table th,
+            .playlist-table td {
+                padding: 0.7rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .playlist-table .col-url {
+                max-width: 100px;
+            }
+
+            .submit-btn {
+                font-size: 0.9rem;
+                padding: 0.8rem;
+            }
+
+            .toast {
+                font-size: 0.8rem;
+                padding: 0.6rem 1.4rem;
+                white-space: normal;
+                max-width: 90%;
+                border-radius: 40px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .container {
+                padding: 1rem 0.8rem 1.5rem;
+            }
+            .playlist-table th,
+            .playlist-table td {
+                padding: 0.5rem 0.5rem;
+                font-size: 0.7rem;
+            }
+            .playlist-table .col-url {
+                max-width: 60px;
+            }
+            .delete-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 0.9rem;
+            }
+            .form-row label {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- HEADER -->
+        <div class="header">
+            <span class="header-icon">🎧</span>
+            <h1>Playlist</h1>
+            <span class="badge">✦ modern</span>
+        </div>
+
+        <!-- FORM -->
+        <div class="form-wrapper">
+            <form id="playlistForm" autocomplete="off">
+                <div class="form-row">
+                    <label for="songTitle">
+                        <span class="label-icon">🎵</span> Judul Lagu
+                    </label>
+                    <input
+                    type="text"
+                    id="songTitle"
+                    placeholder="Misal: Blinding Lights"
+                    required
+                    />
+                </div>
+
+                <div class="form-row">
+                    <label for="songUrl">
+                        <span class="label-icon">🔗</span> Alamat URL
+                    </label>
+                    <textarea
+                    id="songUrl"
+                    placeholder="https://open.spotify.com/track/..."
+                    required
+                ></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                <span class="btn-icon">＋</span> Tambahkan ke Playlist
+            </button>
+        </form>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-header">
+        <h2>📋 Daftar Lagu</h2>
+        <span class="count-badge" id="songCount">0 lagu</span>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="playlist-table">
+            <thead>
+                <tr>
+                    <th>Judul</th>
+                    <th>URL</th>
+                    <th class="col-actions">Hapus</th>
+                </tr>
+            </thead>
+            <tbody id="playlistBody">
+                <!-- Baris akan ditambahkan oleh JS -->
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+    <span class="toast-icon">✅</span>
+    <span id="toastMessage">Lagu ditambahkan!</span>
+</div>
+
+<script>
+    (function() {
+        'use strict';
+
+        // ----- DOM refs -----
+        const form = document.getElementById('playlistForm');
+        const titleInput = document.getElementById('songTitle');
+        const urlInput = document.getElementById('songUrl');
+        const tbody = document.getElementById('playlistBody');
+        const countBadge = document.getElementById('songCount');
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMessage');
+
+        // ----- Data -----
+        let songs = [];
+
+        // ----- Toast -----
+        let toastTimer = null;
+
+        function showToast(message, icon = '✅') {
+            toastMsg.textContent = message;
+            document.querySelector('.toast .toast-icon').textContent = icon;
+            toast.classList.add('show');
+
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2400);
+        }
+
+        // ----- Render table -----
+        function renderTable() {
+            if (songs.length === 0) {
+                tbody.innerHTML = `
+                        <tr>
+                            <td colspan="3">
+                                <div class="empty-state">
+                                    <div class="empty-icon">🎶</div>
+                                    <p>Belum ada lagu di playlist</p>
+                                    <div class="empty-sub">Tambahkan lagu favoritmu!</div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                countBadge.textContent = '0 lagu';
+                return;
+            }
+
+            let html = '';
+            songs.forEach((song, index) => {
+                // Sanitasi sederhana untuk mencegah XSS
+                const safeTitle = song.title.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const safeUrl = song.url.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+                html += `
+                        <tr data-index="${index}">
+                            <td class="col-title">${safeTitle}</td>
+                            <td class="col-url">
+                                <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" title="${safeUrl}">
+                                    ${safeUrl}
+                                </a>
+                            </td>
+                            <td class="col-actions">
+                                <button class="delete-btn" data-index="${index}" aria-label="Hapus lagu">
+                                    ✕
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+            });
+
+            tbody.innerHTML = html;
+
+            // Update count
+            const label = songs.length === 1 ? '1 lagu' : `${songs.length} lagu`;
+            countBadge.textContent = label;
+
+            // Attach delete events
+            tbody.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const idx = parseInt(this.getAttribute('data-index'), 10);
+                    if (!isNaN(idx)) {
+                        deleteSong(idx);
+                    }
+                });
+            });
+        }
+
+        // ----- Add song -----
+        function addSong(title, url) {
+            // Trim & validate
+            const trimmedTitle = title.trim();
+            const trimmedUrl = url.trim();
+
+            if (!trimmedTitle) {
+                showToast('Judul lagu tidak boleh kosong', '⚠️');
+                titleInput.focus();
+                return false;
+            }
+
+            if (!trimmedUrl) {
+                showToast('URL tidak boleh kosong', '⚠️');
+                urlInput.focus();
+                return false;
+            }
+
+            // Simple URL validation (basic)
+            try {
+                const urlObj = new URL(trimmedUrl);
+                if (!urlObj.protocol.startsWith('http')) throw new Error();
+            } catch (_) {
+                showToast('Masukkan URL yang valid (contoh: https://...)', '⚠️');
+                urlInput.focus();
+                return false;
+            }
+
+            // Check duplicate (case-insensitive)
+            const duplicate = songs.some(s =>
+                s.title.toLowerCase() === trimmedTitle.toLowerCase() &&
+                s.url.toLowerCase() === trimmedUrl.toLowerCase()
+            );
+            if (duplicate) {
+                showToast('Lagu ini sudah ada di playlist', '🔄');
+                return false;
+            }
+
+            // Add
+            songs.push({ title: trimmedTitle, url: trimmedUrl });
+            renderTable();
+            showToast(`"${trimmedTitle}" berhasil ditambahkan!`, '✅');
+
+            // Reset form
+            form.reset();
+            titleInput.focus();
+
+            return true;
+        }
+
+        // ----- Delete song -----
+        function deleteSong(index) {
+            if (index < 0 || index >= songs.length) return;
+
+            const deleted = songs[index];
+            songs.splice(index, 1);
+
+            // Animasi hapus
+            const rows = tbody.querySelectorAll('tr');
+            if (rows[index]) {
+                rows[index].classList.add('removing');
+                setTimeout(() => {
+                    renderTable();
+                    showToast(`"${deleted.title}" dihapus`, '🗑️');
+                }, 250);
+            } else {
+                renderTable();
+                showToast(`"${deleted.title}" dihapus`, '🗑️');
+            }
+        }
+
+        // ----- Form submit -----
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            addSong(titleInput.value, urlInput.value);
+        });
+
+        // ----- Keyboard shortcut: Enter di textarea juga submit (dengan Shift+Enter untuk newline) -----
+        urlInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                form.dispatchEvent(new Event('submit'));
+            }
+        });
+
+        // ----- Inisialisasi dengan contoh data -----
+        const demoData = [
+            { title: 'Blinding Lights', url: 'https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b' }
+        ];
+
+        // Load demo data with a tiny delay for smooth render
+        setTimeout(() => {
+            songs = demoData.slice();
+            renderTable();
+            // Show welcome toast after a beat
+            setTimeout(() => {
+                showToast('Selamat datang! 🎵 Coba tambahkan lagu', '👋');
+            }, 400);
+        }, 80);
+
+        // ----- Ekspos ke global (opsional) -----
+        window.__playlist = {
+            addSong,
+            deleteSong,
+            songs: () => songs,
+        };
+
+    })();
+</script>
+
+</body>
+</html>
