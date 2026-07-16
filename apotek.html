@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Apotek — Input Obat</title>
+    <style>
+        /* ----- Reset & Base (Light, Elegant Pharmacy Theme) ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+            background-image:
+                radial-gradient(ellipse at 10% 20%, rgba(0, 150, 136, 0.04) 0%, transparent 60%),
+                radial-gradient(ellipse at 90% 80%, rgba(0, 180, 180, 0.03) 0%, transparent 50%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 780px;
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 2.6rem 3rem 3.2rem;
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.04),
+                0 0 0 1px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s ease;
+        }
+
+        /* ----- Header (Pharmacy Elegant) ----- */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            margin-bottom: 2.4rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 2px solid #f0f2f5;
+        }
+
+        .header-icon {
+            font-size: 2rem;
+            line-height: 1;
+            background: #e8f5f3;
+            width: 50px;
+            height: 50px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-text h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #1a2b2a;
+        }
+
+        .header-text p {
+            font-size: 0.8rem;
+            color: #6b827f;
+            font-weight: 400;
+            margin-top: 0.05rem;
+            letter-spacing: 0.2px;
+        }
+
+        .header-badge {
+            margin-left: auto;
+            background: #e8f5f3;
+            color: #1d6b64;
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            letter-spacing: 0.4px;
+            border: 1px solid rgba(0, 150, 136, 0.10);
+        }
+
+        /* ----- Form (Elegant) ----- */
+        .form-wrapper {
+            background: #f8faf9;
+            border-radius: 18px;
+            padding: 1.8rem 2rem 2rem;
+            border: 1px solid #e6ece9;
+            margin-bottom: 2.4rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-wrapper:focus-within {
+            border-color: #2a9d8f;
+            box-shadow: 0 0 0 4px rgba(42, 157, 143, 0.08);
+        }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            margin-bottom: 1.4rem;
+        }
+
+        .form-row:last-of-type {
+            margin-bottom: 1.8rem;
+        }
+
+        .form-row label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            color: #3d5a54;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-row label .label-icon {
+            font-size: 0.9rem;
+        }
+
+        .form-row input {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #d5dfda;
+            border-radius: 12px;
+            padding: 0.85rem 1.2rem;
+            font-size: 0.95rem;
+            font-family: inherit;
+            color: #1a2b2a;
+            transition: all 0.25s ease;
+            outline: none;
+        }
+
+        .form-row input::placeholder {
+            color: #9aafaa;
+            font-weight: 400;
+        }
+
+        .form-row input:focus {
+            border-color: #2a9d8f;
+            box-shadow: 0 0 0 4px rgba(42, 157, 143, 0.10);
+            background: #ffffff;
+        }
+
+        /* ----- Submit Button (Pharmacy Green) ----- */
+        .submit-btn {
+            width: 100%;
+            padding: 0.95rem;
+            border: none;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            color: #fff;
+            background: linear-gradient(135deg, #2a9d8f, #1e7a6f);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 16px rgba(42, 157, 143, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 60%);
+            pointer-events: none;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(42, 157, 143, 0.35);
+            background: linear-gradient(135deg, #30b0a0, #218a7c);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0px);
+            box-shadow: 0 4px 12px rgba(42, 157, 143, 0.20);
+        }
+
+        .submit-btn .btn-icon {
+            font-size: 1.2rem;
+        }
+
+        /* ----- Table Section ----- */
+        .table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.2rem;
+        }
+
+        .table-header h2 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #1a2b2a;
+            letter-spacing: -0.01em;
+        }
+
+        .table-header .count-badge {
+            background: #e8f5f3;
+            padding: 0.25rem 1rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #1d6b64;
+            border: 1px solid rgba(0, 150, 136, 0.08);
+        }
+
+        .table-wrapper {
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #e6ece9;
+            background: #ffffff;
+        }
+
+        .obat-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .obat-table thead {
+            background: #f2f7f5;
+        }
+
+        .obat-table th {
+            text-align: left;
+            padding: 0.85rem 1.2rem;
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #3d5a54;
+            border-bottom: 1px solid #dfe7e3;
+        }
+
+        .obat-table th:last-child {
+            text-align: right;
+            width: 80px;
+        }
+
+        .obat-table td {
+            padding: 0.85rem 1.2rem;
+            color: #1a2b2a;
+            border-bottom: 1px solid #edf2ef;
+            vertical-align: middle;
+            transition: background 0.2s ease;
+        }
+
+        .obat-table tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        .obat-table tbody tr:hover {
+            background: #f6faf8;
+        }
+
+        .obat-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .obat-table .col-nama {
+            font-weight: 500;
+            color: #122221;
+        }
+
+        .obat-table .col-harga {
+            font-weight: 400;
+            color: #1d6b64;
+            font-size: 0.9rem;
+        }
+
+        .obat-table .col-actions {
+            text-align: right;
+        }
+
+        /* ----- Delete Button (Elegant) ----- */
+        .delete-btn {
+            background: rgba(200, 70, 70, 0.05);
+            border: none;
+            color: #b07a7a;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(200, 70, 70, 0.05);
+        }
+
+        .delete-btn:hover {
+            background: rgba(200, 70, 70, 0.10);
+            color: #c44a4a;
+            transform: scale(1.05);
+            border-color: rgba(200, 70, 70, 0.10);
+        }
+
+        .delete-btn:active {
+            transform: scale(0.92);
+        }
+
+        /* ----- Empty State ----- */
+        .empty-state {
+            text-align: center;
+            padding: 2.4rem 1.5rem;
+            color: #6b827f;
+        }
+
+        .empty-state .empty-icon {
+            font-size: 2.8rem;
+            margin-bottom: 0.6rem;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+        .empty-state .empty-sub {
+            font-size: 0.75rem;
+            color: #9aafaa;
+            margin-top: 0.2rem;
+        }
+
+        /* ----- Animations ----- */
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(10px) scale(0.98);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .obat-table tbody tr {
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+        }
+
+        .obat-table tbody tr.removing {
+            animation: fadeOut 0.25s ease forwards;
+        }
+
+        /* ----- Toast Notification (Elegant) ----- */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #ffffff;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 0.8rem 2rem;
+            border-radius: 60px;
+            border: 1px solid #dfe7e3;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+            color: #1a2b2a;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            z-index: 999;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+
+        .toast .toast-icon {
+            font-size: 1.2rem;
+        }
+
+        /* ----- Responsive ----- */
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.5rem 1.2rem 2rem;
+                border-radius: 20px;
+            }
+
+            .header-text h1 {
+                font-size: 1.3rem;
+            }
+            .header-badge {
+                font-size: 0.55rem;
+                padding: 0.2rem 0.7rem;
+            }
+            .header-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 1.6rem;
+            }
+
+            .form-wrapper {
+                padding: 1.2rem 1rem;
+            }
+
+            .form-row input {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .obat-table th,
+            .obat-table td {
+                padding: 0.7rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .submit-btn {
+                font-size: 0.9rem;
+                padding: 0.8rem;
+            }
+
+            .toast {
+                font-size: 0.8rem;
+                padding: 0.6rem 1.4rem;
+                white-space: normal;
+                max-width: 90%;
+                border-radius: 40px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .container {
+                padding: 1rem 0.8rem 1.5rem;
+            }
+            .obat-table th,
+            .obat-table td {
+                padding: 0.5rem 0.5rem;
+                font-size: 0.7rem;
+            }
+            .delete-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 0.85rem;
+            }
+            .form-row label {
+                font-size: 0.7rem;
+            }
+            .header-text h1 {
+                font-size: 1.1rem;
+            }
+            .header-text p {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-icon">💊</div>
+            <div class="header-text">
+                <h1>Data Obat</h1>
+                <p>Kelola stok obat dengan mudah</p>
+            </div>
+            <span class="header-badge">✦ apotek</span>
+        </div>
+
+        <!-- FORM -->
+        <div class="form-wrapper">
+            <form id="obatForm" autocomplete="off">
+                <div class="form-row">
+                    <label for="namaObat">
+                        <span class="label-icon">💊</span> Nama Obat
+                    </label>
+                    <input
+                    type="text"
+                    id="namaObat"
+                    placeholder="Misal: Paracetamol 500 mg"
+                    required
+                    />
+                </div>
+
+                <div class="form-row">
+                    <label for="hargaObat">
+                        <span class="label-icon">💰</span> Harga
+                    </label>
+                    <input
+                    type="text"
+                    id="hargaObat"
+                    placeholder="Contoh: Rp2.308 / Tablet"
+                    required
+                    />
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span class="btn-icon">＋</span> Tambahkan Obat
+                </button>
+            </form>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-header">
+            <h2>📋 Daftar Obat</h2>
+            <span class="count-badge" id="obatCount">0 item</span>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="obat-table">
+                <thead>
+                    <tr>
+                        <th>Nama Obat</th>
+                        <th>Harga</th>
+                        <th class="col-actions">Hapus</th>
+                    </tr>
+                </thead>
+                <tbody id="obatBody">
+                    <!-- Baris akan ditambahkan oleh JS -->
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">✅</span>
+        <span id="toastMessage">Obat ditambahkan!</span>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ----- DOM refs -----
+            const form = document.getElementById('obatForm');
+            const namaInput = document.getElementById('namaObat');
+            const hargaInput = document.getElementById('hargaObat');
+            const tbody = document.getElementById('obatBody');
+            const countBadge = document.getElementById('obatCount');
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMessage');
+
+            // ----- Data -----
+            let obatList = [];
+
+            // ----- Toast -----
+            let toastTimer = null;
+
+            function showToast(message, icon = '✅') {
+                toastMsg.textContent = message;
+                document.querySelector('.toast .toast-icon').textContent = icon;
+                toast.classList.add('show');
+
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2400);
+            }
+
+            // ----- Render table -----
+            function renderTable() {
+                if (obatList.length === 0) {
+                    tbody.innerHTML = `
+                            <tr>
+                                <td colspan="3">
+                                    <div class="empty-state">
+                                        <div class="empty-icon">💊</div>
+                                        <p>Belum ada data obat</p>
+                                        <div class="empty-sub">Tambahkan obat yang tersedia</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    countBadge.textContent = '0 item';
+                    return;
+                }
+
+                let html = '';
+                obatList.forEach((obat, index) => {
+                    const safeNama = obat.nama.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const safeHarga = obat.harga.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+                    html += `
+                            <tr data-index="${index}">
+                                <td class="col-nama">${safeNama}</td>
+                                <td class="col-harga">${safeHarga}</td>
+                                <td class="col-actions">
+                                    <button class="delete-btn" data-index="${index}" aria-label="Hapus obat">
+                                        ✕
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                });
+
+                tbody.innerHTML = html;
+
+                // Update count
+                const label = obatList.length === 1 ? '1 item' : `${obatList.length} item`;
+                countBadge.textContent = label;
+
+                // Attach delete events
+                tbody.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const idx = parseInt(this.getAttribute('data-index'), 10);
+                        if (!isNaN(idx)) {
+                            deleteObat(idx);
+                        }
+                    });
+                });
+            }
+
+            // ----- Add obat -----
+            function addObat(nama, harga) {
+                const trimmedNama = nama.trim();
+                const trimmedHarga = harga.trim();
+
+                if (!trimmedNama) {
+                    showToast('Nama obat tidak boleh kosong', '⚠️');
+                    namaInput.focus();
+                    return false;
+                }
+
+                if (!trimmedHarga) {
+                    showToast('Harga tidak boleh kosong', '⚠️');
+                    hargaInput.focus();
+                    return false;
+                }
+
+                // Cek duplikat (case-insensitive)
+                const duplicate = obatList.some(o =>
+                    o.nama.toLowerCase() === trimmedNama.toLowerCase() &&
+                    o.harga.toLowerCase() === trimmedHarga.toLowerCase()
+                );
+                if (duplicate) {
+                    showToast('Obat dengan nama & harga ini sudah ada', '🔄');
+                    return false;
+                }
+
+                // Add
+                obatList.push({ nama: trimmedNama, harga: trimmedHarga });
+                renderTable();
+                showToast(`"${trimmedNama}" berhasil ditambahkan!`, '✅');
+
+                // Reset form
+                form.reset();
+                namaInput.focus();
+
+                return true;
+            }
+
+            // ----- Delete obat -----
+            function deleteObat(index) {
+                if (index < 0 || index >= obatList.length) return;
+
+                const deleted = obatList[index];
+                obatList.splice(index, 1);
+
+                const rows = tbody.querySelectorAll('tr');
+                if (rows[index]) {
+                    rows[index].classList.add('removing');
+                    setTimeout(() => {
+                        renderTable();
+                        showToast(`"${deleted.nama}" dihapus`, '🗑️');
+                    }, 250);
+                } else {
+                    renderTable();
+                    showToast(`"${deleted.nama}" dihapus`, '🗑️');
+                }
+            }
+
+            // ----- Form submit -----
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                addObat(namaInput.value, hargaInput.value);
+            });
+
+            // ----- Inisialisasi dengan contoh data (format free text) -----
+            const demoData = [
+                { nama: 'Paracetamol 500 mg', harga: 'Rp2.308 / Tablet' },
+                { nama: 'Amoxicillin 500 mg', harga: 'Rp4.500 / Kaplet' },
+                { nama: 'Cetirizine 10 mg', harga: 'Rp1.200 / Tablet' },
+            ];
+
+            setTimeout(() => {
+                obatList = demoData.slice();
+                renderTable();
+                setTimeout(() => {
+                    showToast('Selamat datang! 💊 Tambahkan obat', '👋');
+                }, 400);
+            }, 80);
+
+            // ----- Ekspos ke global -----
+            window.__apotek = {
+                addObat,
+                deleteObat,
+                obatList: () => obatList,
+            };
+
+        })();
+    </script>
+
+</body>
+</html>
