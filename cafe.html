@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>☕ Cafe & Restoran — Data</title>
+    <style>
+        /* ----- Reset & Base (Light, Modern Cafe Theme) ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f7f5f0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+            background-image:
+                radial-gradient(ellipse at 10% 30%, rgba(180, 140, 100, 0.04) 0%, transparent 60%),
+                radial-gradient(ellipse at 90% 70%, rgba(180, 140, 100, 0.03) 0%, transparent 50%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: #ffffff;
+            border-radius: 32px;
+            padding: 2.6rem 3rem 3.2rem;
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.04),
+                0 0 0 1px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s ease;
+        }
+
+        /* ----- Header (Cafe Modern) ----- */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            margin-bottom: 2.4rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 2px solid #f0ede8;
+        }
+
+        .header-icon {
+            font-size: 2rem;
+            line-height: 1;
+            background: #f5efe8;
+            width: 50px;
+            height: 50px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-text h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #2c241c;
+        }
+
+        .header-text p {
+            font-size: 0.8rem;
+            color: #8a7a6a;
+            font-weight: 400;
+            margin-top: 0.05rem;
+            letter-spacing: 0.2px;
+        }
+
+        .header-badge {
+            margin-left: auto;
+            background: #f5efe8;
+            color: #6b5a4a;
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            letter-spacing: 0.4px;
+            border: 1px solid rgba(180, 140, 100, 0.10);
+        }
+
+        /* ----- Form (Modern Cafe) ----- */
+        .form-wrapper {
+            background: #faf8f5;
+            border-radius: 18px;
+            padding: 1.8rem 2rem 2rem;
+            border: 1px solid #e8e2da;
+            margin-bottom: 2.4rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-wrapper:focus-within {
+            border-color: #c4a88a;
+            box-shadow: 0 0 0 4px rgba(196, 168, 138, 0.10);
+        }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            margin-bottom: 1.4rem;
+        }
+
+        .form-row:last-of-type {
+            margin-bottom: 1.8rem;
+        }
+
+        .form-row label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            color: #5a4d3e;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-row label .label-icon {
+            font-size: 0.9rem;
+        }
+
+        .form-row input,
+        .form-row textarea {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #dad3ca;
+            border-radius: 12px;
+            padding: 0.85rem 1.2rem;
+            font-size: 0.95rem;
+            font-family: inherit;
+            color: #2c241c;
+            transition: all 0.25s ease;
+            outline: none;
+        }
+
+        .form-row input::placeholder,
+        .form-row textarea::placeholder {
+            color: #b0a294;
+            font-weight: 400;
+        }
+
+        .form-row input:focus,
+        .form-row textarea:focus {
+            border-color: #c4a88a;
+            box-shadow: 0 0 0 4px rgba(196, 168, 138, 0.10);
+            background: #ffffff;
+        }
+
+        .form-row textarea {
+            min-height: 72px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        /* ----- Submit Button (Cafe Brown) ----- */
+        .submit-btn {
+            width: 100%;
+            padding: 0.95rem;
+            border: none;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            color: #fff;
+            background: linear-gradient(135deg, #b8956e, #a07d5a);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 16px rgba(160, 125, 90, 0.20);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 60%);
+            pointer-events: none;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(160, 125, 90, 0.30);
+            background: linear-gradient(135deg, #c8a07a, #ae8a66);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0px);
+            box-shadow: 0 4px 12px rgba(160, 125, 90, 0.15);
+        }
+
+        .submit-btn .btn-icon {
+            font-size: 1.2rem;
+        }
+
+        /* ----- Table Section ----- */
+        .table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.2rem;
+        }
+
+        .table-header h2 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #2c241c;
+            letter-spacing: -0.01em;
+        }
+
+        .table-header .count-badge {
+            background: #f5efe8;
+            padding: 0.25rem 1rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #6b5a4a;
+            border: 1px solid rgba(180, 140, 100, 0.08);
+        }
+
+        .table-wrapper {
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #e8e2da;
+            background: #ffffff;
+        }
+
+        .cafe-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .cafe-table thead {
+            background: #f5f0ea;
+        }
+
+        .cafe-table th {
+            text-align: left;
+            padding: 0.85rem 1.2rem;
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #5a4d3e;
+            border-bottom: 1px solid #e0d8ce;
+        }
+
+        .cafe-table th:last-child {
+            text-align: right;
+            width: 80px;
+        }
+
+        .cafe-table td {
+            padding: 0.85rem 1.2rem;
+            color: #2c241c;
+            border-bottom: 1px solid #ede7df;
+            vertical-align: middle;
+            transition: background 0.2s ease;
+        }
+
+        .cafe-table tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        .cafe-table tbody tr:hover {
+            background: #faf7f2;
+        }
+
+        .cafe-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .cafe-table .col-nama {
+            font-weight: 500;
+            color: #1e1914;
+        }
+
+        .cafe-table .col-rating {
+            font-weight: 500;
+            color: #b8956e;
+        }
+
+        .cafe-table .col-maps {
+            color: #6b5a4a;
+            font-size: 0.8rem;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .cafe-table .col-maps a {
+            color: #6b5a4a;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .cafe-table .col-maps a:hover {
+            color: #b8956e;
+            text-decoration: underline;
+        }
+
+        .cafe-table .col-actions {
+            text-align: right;
+        }
+
+        /* ----- Delete Button (Elegant) ----- */
+        .delete-btn {
+            background: rgba(180, 100, 70, 0.05);
+            border: none;
+            color: #b07a6a;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(180, 100, 70, 0.05);
+        }
+
+        .delete-btn:hover {
+            background: rgba(180, 100, 70, 0.10);
+            color: #c46a4a;
+            transform: scale(1.05);
+            border-color: rgba(180, 100, 70, 0.10);
+        }
+
+        .delete-btn:active {
+            transform: scale(0.92);
+        }
+
+        /* ----- Empty State ----- */
+        .empty-state {
+            text-align: center;
+            padding: 2.4rem 1.5rem;
+            color: #8a7a6a;
+        }
+
+        .empty-state .empty-icon {
+            font-size: 2.8rem;
+            margin-bottom: 0.6rem;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+        .empty-state .empty-sub {
+            font-size: 0.75rem;
+            color: #b0a294;
+            margin-top: 0.2rem;
+        }
+
+        /* ----- Animations ----- */
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(10px) scale(0.98);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .cafe-table tbody tr {
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+        }
+
+        .cafe-table tbody tr.removing {
+            animation: fadeOut 0.25s ease forwards;
+        }
+
+        /* ----- Toast Notification (Elegant) ----- */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #ffffff;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 0.8rem 2rem;
+            border-radius: 60px;
+            border: 1px solid #e0d8ce;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+            color: #2c241c;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            z-index: 999;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+
+        .toast .toast-icon {
+            font-size: 1.2rem;
+        }
+
+        /* ----- Responsive ----- */
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.5rem 1.2rem 2rem;
+                border-radius: 20px;
+            }
+
+            .header-text h1 {
+                font-size: 1.3rem;
+            }
+            .header-badge {
+                font-size: 0.55rem;
+                padding: 0.2rem 0.7rem;
+            }
+            .header-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 1.6rem;
+            }
+
+            .form-wrapper {
+                padding: 1.2rem 1rem;
+            }
+
+            .form-row input,
+            .form-row textarea {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .cafe-table th,
+            .cafe-table td {
+                padding: 0.7rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .cafe-table .col-maps {
+                max-width: 100px;
+            }
+
+            .submit-btn {
+                font-size: 0.9rem;
+                padding: 0.8rem;
+            }
+
+            .toast {
+                font-size: 0.8rem;
+                padding: 0.6rem 1.4rem;
+                white-space: normal;
+                max-width: 90%;
+                border-radius: 40px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .container {
+                padding: 1rem 0.8rem 1.5rem;
+            }
+            .cafe-table th,
+            .cafe-table td {
+                padding: 0.5rem 0.5rem;
+                font-size: 0.7rem;
+            }
+            .cafe-table .col-maps {
+                max-width: 60px;
+            }
+            .delete-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 0.85rem;
+            }
+            .form-row label {
+                font-size: 0.7rem;
+            }
+            .header-text h1 {
+                font-size: 1.1rem;
+            }
+            .header-text p {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-icon">☕</div>
+            <div class="header-text">
+                <h1>Data Cafe & Restoran</h1>
+                <p>Kelola daftar tempat favoritmu</p>
+            </div>
+            <span class="header-badge">✦ modern</span>
+        </div>
+
+        <!-- FORM -->
+        <div class="form-wrapper">
+            <form id="cafeForm" autocomplete="off">
+                <div class="form-row">
+                    <label for="namaCafe">
+                        <span class="label-icon">🏠</span> Nama Cafe / Restoran
+                    </label>
+                    <input
+                    type="text"
+                    id="namaCafe"
+                    placeholder="Misal: Kopi Nusantara"
+                    required
+                    />
+                </div>
+
+                <div class="form-row">
+                    <label for="ratingCafe">
+                        <span class="label-icon">⭐</span> Rating
+                    </label>
+                    <input
+                    type="text"
+                    id="ratingCafe"
+                    placeholder="Misal: 4.5 / 5"
+                    required
+                    />
+                </div>
+
+                <div class="form-row">
+                    <label for="mapsCafe">
+                        <span class="label-icon">📍</span> Link Maps (URL)
+                    </label>
+                    <textarea
+                    id="mapsCafe"
+                    placeholder="https://maps.app.goo.gl/..."
+                    required
+                ></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                <span class="btn-icon">＋</span> Tambahkan Tempat
+            </button>
+        </form>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-header">
+        <h2>📋 Daftar Tempat</h2>
+        <span class="count-badge" id="cafeCount">0 item</span>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="cafe-table">
+            <thead>
+                <tr>
+                    <th>Nama</th>
+                    <th>Rating</th>
+                    <th>Maps</th>
+                    <th class="col-actions">Hapus</th>
+                </tr>
+            </thead>
+            <tbody id="cafeBody">
+                <!-- Baris akan ditambahkan oleh JS -->
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+    <span class="toast-icon">✅</span>
+    <span id="toastMessage">Tempat ditambahkan!</span>
+</div>
+
+<script>
+    (function() {
+        'use strict';
+
+        // ----- DOM refs -----
+        const form = document.getElementById('cafeForm');
+        const namaInput = document.getElementById('namaCafe');
+        const ratingInput = document.getElementById('ratingCafe');
+        const mapsInput = document.getElementById('mapsCafe');
+        const tbody = document.getElementById('cafeBody');
+        const countBadge = document.getElementById('cafeCount');
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMessage');
+
+        // ----- Data -----
+        let cafeList = [];
+
+        // ----- Toast -----
+        let toastTimer = null;
+
+        function showToast(message, icon = '✅') {
+            toastMsg.textContent = message;
+            document.querySelector('.toast .toast-icon').textContent = icon;
+            toast.classList.add('show');
+
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2400);
+        }
+
+        // ----- Render table -----
+        function renderTable() {
+            if (cafeList.length === 0) {
+                tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4">
+                                <div class="empty-state">
+                                    <div class="empty-icon">☕</div>
+                                    <p>Belum ada data tempat</p>
+                                    <div class="empty-sub">Tambahkan cafe atau restoran favoritmu</div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                countBadge.textContent = '0 item';
+                return;
+            }
+
+            let html = '';
+            cafeList.forEach((cafe, index) => {
+                const safeNama = cafe.nama.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const safeRating = cafe.rating.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const safeMaps = cafe.maps.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+                html += `
+                        <tr data-index="${index}">
+                            <td class="col-nama">${safeNama}</td>
+                            <td class="col-rating">${safeRating}</td>
+                            <td class="col-maps">
+                                <a href="${safeMaps}" target="_blank" rel="noopener noreferrer" title="${safeMaps}">
+                                    ${safeMaps}
+                                </a>
+                            </td>
+                            <td class="col-actions">
+                                <button class="delete-btn" data-index="${index}" aria-label="Hapus tempat">
+                                    ✕
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+            });
+
+            tbody.innerHTML = html;
+
+            // Update count
+            const label = cafeList.length === 1 ? '1 item' : `${cafeList.length} item`;
+            countBadge.textContent = label;
+
+            // Attach delete events
+            tbody.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const idx = parseInt(this.getAttribute('data-index'), 10);
+                    if (!isNaN(idx)) {
+                        deleteCafe(idx);
+                    }
+                });
+            });
+        }
+
+        // ----- Add cafe -----
+        function addCafe(nama, rating, maps) {
+            const trimmedNama = nama.trim();
+            const trimmedRating = rating.trim();
+            const trimmedMaps = maps.trim();
+
+            if (!trimmedNama) {
+                showToast('Nama tempat tidak boleh kosong', '⚠️');
+                namaInput.focus();
+                return false;
+            }
+
+            if (!trimmedRating) {
+                showToast('Rating tidak boleh kosong', '⚠️');
+                ratingInput.focus();
+                return false;
+            }
+
+            if (!trimmedMaps) {
+                showToast('Link Maps tidak boleh kosong', '⚠️');
+                mapsInput.focus();
+                return false;
+            }
+
+            // Simple URL validation (basic)
+            try {
+                const urlObj = new URL(trimmedMaps);
+                if (!urlObj.protocol.startsWith('http')) throw new Error();
+            } catch (_) {
+                showToast('Masukkan URL Maps yang valid (contoh: https://...)', '⚠️');
+                mapsInput.focus();
+                return false;
+            }
+
+            // Cek duplikat (case-insensitive)
+            const duplicate = cafeList.some(c =>
+                c.nama.toLowerCase() === trimmedNama.toLowerCase() &&
+                c.rating.toLowerCase() === trimmedRating.toLowerCase() &&
+                c.maps.toLowerCase() === trimmedMaps.toLowerCase()
+            );
+            if (duplicate) {
+                showToast('Tempat dengan data ini sudah ada', '🔄');
+                return false;
+            }
+
+            // Add
+            cafeList.push({ nama: trimmedNama, rating: trimmedRating, maps: trimmedMaps });
+            renderTable();
+            showToast(`"${trimmedNama}" berhasil ditambahkan!`, '✅');
+
+            // Reset form
+            form.reset();
+            namaInput.focus();
+
+            return true;
+        }
+
+        // ----- Delete cafe -----
+        function deleteCafe(index) {
+            if (index < 0 || index >= cafeList.length) return;
+
+            const deleted = cafeList[index];
+            cafeList.splice(index, 1);
+
+            const rows = tbody.querySelectorAll('tr');
+            if (rows[index]) {
+                rows[index].classList.add('removing');
+                setTimeout(() => {
+                    renderTable();
+                    showToast(`"${deleted.nama}" dihapus`, '🗑️');
+                }, 250);
+            } else {
+                renderTable();
+                showToast(`"${deleted.nama}" dihapus`, '🗑️');
+            }
+        }
+
+        // ----- Form submit -----
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            addCafe(namaInput.value, ratingInput.value, mapsInput.value);
+        });
+
+        // ----- Keyboard shortcut: Enter di textarea juga submit (dengan Shift+Enter untuk newline) -----
+        mapsInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                form.dispatchEvent(new Event('submit'));
+            }
+        });
+
+        // ----- Inisialisasi dengan contoh data -----
+        const demoData = [
+            { nama: 'Kopi Nusantara', rating: '4.8', maps: 'https://maps.app.goo.gl/example1' },
+            { nama: 'Sushi Tei', rating: '4.5', maps: 'https://maps.app.goo.gl/example2' },
+            { nama: 'Bakmi Gajah Mada', rating: '4.3', maps: 'https://maps.app.goo.gl/example3' },
+        ];
+
+        setTimeout(() => {
+            cafeList = demoData.slice();
+            renderTable();
+            setTimeout(() => {
+                showToast('Selamat datang! ☕ Tambahkan tempat favorit', '👋');
+            }, 400);
+        }, 80);
+
+        // ----- Ekspos ke global -----
+        window.__cafe = {
+            addCafe,
+            deleteCafe,
+            cafeList: () => cafeList,
+        };
+
+    })();
+</script>
+
+</body>
+</html>
